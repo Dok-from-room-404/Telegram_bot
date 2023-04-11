@@ -9,10 +9,16 @@ from const import *
 bot = TeleBot(TOKEN)
 
 
+
+
+
 @bot.message_handler(content_types=["text"])
 def wright(message):
-    '''Необходима для написания чего-либо для пользователя'''
+    '''Необходима для взаимодействия с пользователем'''
+    # Пишем то, что написал пользователь
     bot.send_message(message.chat.id, message.text)
+    
+    
     
     
 # Старт
