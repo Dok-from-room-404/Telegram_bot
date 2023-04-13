@@ -49,10 +49,27 @@ def wright(message):
         item3 = types.InlineKeyboardButton("😊 VK", callback_data='bad')
         markup.add(item1, item2, item3)
         
-        bot.send_message(message.chat.id, "Вот следующие социальные сети откуда я могу скачивать видео:", reply_markup=markup)
+        bot.send_message(message.chat.id, "Вот следующие социальные сети откуда я могу что-либо скачивать:", reply_markup=markup)
     
     
     bot.send_message(message.chat.id, message.text)
+    
+    
+@bot.callback_query_handler(func=lambda call: True)
+def callback_inline(call):
+    try:
+        if call.message:
+            if call.data == 'good':
+                bot.send_message(call.message.chat.id, 'Вот и отличненько 😊')
+            elif call.data == 'bad':
+                bot.send_message(call.message.chat.id, 'Бывает 😢')
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="😊 Как дела?",
+                reply_markup=None)
+            # # show alert
+            # bot.answer_callback_query(callback_query_id=call.id, show_alert=False,
+            #     text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!!11")
+    except:
+        ...
     
     
     
