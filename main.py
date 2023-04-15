@@ -17,7 +17,7 @@ file = File()
 @dp.message_handler(commands=['help'])
 async def help_command(message: types.Message):
     '''Помощь для пользователя '''
-    await message.reply(TEXT_FOR_HELP)
+    await message.reply(TEXT_FOR_HELP, reply_markup=ReplyKeyboardRemove())
 
 
 
@@ -36,7 +36,7 @@ async def welcome(message: types.Message):
                                                                hello = choice(sp)))
                      
     # await bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
-    await message.answer("Я могу скачивать видео и аудио")
+    await message.answer("Я могу скачивать видео и аудио из социальный сетей")
     await wright(message)
     
     
@@ -44,7 +44,7 @@ async def welcome(message: types.Message):
     
 
 
-@dp.message_handler(content_types=["text"])
+@dp.message_handler(content_types=["text"], commands=['dowload'])
 async def wright(message):
     '''Необходима для взаимодействия с пользователем'''
     # message - то что написал пользователь
@@ -66,7 +66,9 @@ async def wright(message):
             # Удаляем кнопки
             await message.answer("Введи ссылку: ", reply_markup=ReplyKeyboardRemove())
         else:
-            markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=3) # default - False
+            # resize_keyboard - адаптация полд интерфейс
+            
+            markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3) # default - False
             b1 = KeyboardButton('YouTube')
             b2 = KeyboardButton('TikTok')
             b3 = KeyboardButton('VK')
