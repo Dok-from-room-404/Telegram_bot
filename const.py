@@ -6,7 +6,7 @@
 Данный файл содержит константы для работы бота
 '''
 
-TOKEN = "6256928363:AAH9yAfxeFYZ34cE59FVHZ40iS77tBCM5Y8" # Токе бота от BotFather
+TOKEN = "6218093072:AAHR9dUmAo24AcMOmWIl-QIGe3Ln2btGQuA" # Токе бота от BotFather
 
 
 class File():
