@@ -2,34 +2,37 @@
 
 
 
-from telebot import TeleBot, types
+from aiogram import Bot, Dispatcher, executor, types
 from random import choice
 from const import *
 
-
-bot = TeleBot(TOKEN)
+# Экземпляр бота
+bot = Bot(TOKEN)
+# Диспечер бота. Отсеживает сообщения
+dp = Dispatcher(bot)
 file = File()
 
 
-@bot.message_handler(commands=['start'])
-def welcome(message):
+@dp.message_handler(commands=['start'])
+async def welcome(message: types.Message):
     '''Приветствие пользователя '''
     # Список стикеров для приветствия пользователя
     sp = ["static//img/lili_hello.png", "static//img/lili.png"]
     # Стикер приветствия
-    bot.send_sticker(message.chat.id, open(choice(sp), 'rb'))
+    await message.answer_sticker(open(choice(sp), 'rb'))
     # Список приветствий для пользователя
     sp = ["Добро пожаловать,", "Привет,", "Привет, пользователь"]
     # Пишем  приветствие для пользователя
-    bot.send_message(message.chat.id, "{hello} {user}!".format(user = message.from_user.first_name, 
+    await message.answer("{hello} {user}!".format(user = message.from_user.first_name, 
                                                                hello = choice(sp)))
                      
-    bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
-    wright(message)
+    # await bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
+    await message.answer("Я могу скачивать видео и аудио")
+    # wright(message)
 
 
-@bot.message_handler(content_types=["text"])
-def wright(message):
+@dp.message_handler(content_types=["text"])
+async def wright(message):
     '''Необходима для взаимодействия с пользователем'''
     # message - то что написал пользователь
     # Пишем то, что написал пользователь
@@ -71,7 +74,7 @@ def wright(message):
     
 if __name__ == "__main__":
     # Старт бота
-    bot.polling(none_stop=True)
+    executor.start_polling(dp)#, on_startup=on_startup)
     
 
 
