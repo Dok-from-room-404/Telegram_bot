@@ -124,9 +124,12 @@ async def wright(message: types.Message, flag:bool=False):
             Соц сеть
             класс соц. сети'''
         # Если взаимодействие с классом соц. сети
-        await message.answer("juvhoerihroih ")
-        print("juvhoerihroih")
-        
+        markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+        formats = User.get_format()
+        #print(formats)
+        for i in formats:
+            markup.insert(KeyboardButton(i))
+        await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
     # Сохранение изменений в БД
     uppdete_user(con, cur, id, pickle.dumps(User))
 
