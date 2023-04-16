@@ -101,6 +101,7 @@ async def wright(message: types.Message, flag:bool=False):
         # https://vk.com/clips 
         # https://www.youtube.com/shorts/96LQhbSIFWI
         try:
+            '''После того, как пользователь ввел ссылку'''
             User.append_link(message.text)
             await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
         # НЕ УДАЛЯТЬ
@@ -108,6 +109,7 @@ async def wright(message: types.Message, flag:bool=False):
         #     await message.answer("Введена не допустимая ссылка")
         #     await message.answer("Введите ссылку: ")
         except Exception as er:
+            '''До того, как пользователь ввел ссылку'''
             await message.answer(er)
             await message.answer("Введите ссылку: ")
         
@@ -116,6 +118,7 @@ async def wright(message: types.Message, flag:bool=False):
             Соц сеть
             класс соц. сети'''
         # взаимодействие с классом соц. сети
+        await message.answer("juvhoerihroih ")
         print("juvhoerihroih")
         
     # Сохранение изменений в БД
