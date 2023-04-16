@@ -18,6 +18,9 @@
 ------
     * File - Класс файла который будет обрабатывать бот. Необходим чтобы бот понимал на каком он этапе обработки файла
 '''
+from modle.YouTube import *
+
+
 # Список доступных соц сетей
 NET = ["YouTube", "TikTok", "VK"]
 
@@ -84,6 +87,17 @@ class File(object):
         
         elif self.__net == "VK" and "vk.com" not in link:
             raise LINK_ERROR("Введена не допустимая ссылка 4")
+        try:
+            if self.__net == "YouTube":
+                self.__class_net = File_YouTube(link)
+                
+            elif self.__net == "TikTok":
+                ...
+                
+            elif self.__net == "VK":
+                ...
+        except:
+            raise LINK_ERROR("Введена не допустимая ссылка 5")
         
         
     
