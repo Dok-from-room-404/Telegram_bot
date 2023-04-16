@@ -67,9 +67,9 @@ async def wright(message: types.Message, flag:bool=False):
     if flag:
         "Перезапуск функции скачки"
         User.reset_file()
-        
+    
     if User.sheck_stage_0():
-        # Выбор соц. сети
+        # Если выбор соц. сети
         if message.text != "":
             "После того как пользователь ввел соц сеть"
             try:
@@ -78,6 +78,7 @@ async def wright(message: types.Message, flag:bool=False):
                 # Удаляем кнопки
                 hideBoard = ReplyKeyboardRemove()
                 await message.answer("Введите ссылку: ", reply_markup=hideBoard)
+                
             # НЕ УДАЛЯТЬ
             # except NET_ERROR:
             #     await message.answer("Выбрана не верная социальная сеть. Выберете из предложенных")
@@ -93,10 +94,11 @@ async def wright(message: types.Message, flag:bool=False):
             markup.add(b1, b2, b3)
             #markup.add(item1).insert(item2).add(item3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
+        
             
     elif User.sheck_stage_1():
         '''После того как пользователь ввел ссылку. Соц сеть записана в класс'''
-        # Ввод ссылки
+        # Если  ввод ссылки
         # https://www.youtube.com/watch?v=M9dvN4S31ts&t=1s
         # https://vk.com/clips 
         # https://www.youtube.com/shorts/96LQhbSIFWI
@@ -104,6 +106,10 @@ async def wright(message: types.Message, flag:bool=False):
             '''После того, как пользователь ввел ссылку'''
             User.append_link(message.text)
             await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
+            # Сохранение изменений в БД (тут из-за рекурсии)
+            uppdete_user(con, cur, id, pickle.dumps(User))
+            await wright(message)
+            
         # НЕ УДАЛЯТЬ
         # except LINK_ERROR:
         #     await message.answer("Введена не допустимая ссылка")
@@ -117,13 +123,12 @@ async def wright(message: types.Message, flag:bool=False):
         '''После того как пользователь ввел и записал:
             Соц сеть
             класс соц. сети'''
-        # взаимодействие с классом соц. сети
+        # Если взаимодействие с классом соц. сети
         await message.answer("juvhoerihroih ")
         print("juvhoerihroih")
         
     # Сохранение изменений в БД
-    inf = pickle.dumps(User)
-    uppdete_user(con, cur, id, inf)
+    uppdete_user(con, cur, id, pickle.dumps(User))
 
 
 if __name__ == "__main__":
