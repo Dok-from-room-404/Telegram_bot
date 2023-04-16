@@ -9,7 +9,6 @@ from const import *
 from modle.User import USER
 from modle.User.file import NET_ERROR, LINK_ERROR
 from modle.command_bd import *
-from io import BytesIO
 import pickle
 
 
@@ -18,16 +17,9 @@ import pickle
 bot = Bot(TOKEN)
 # Диспечер бота. Отсеживает сообщения
 dp = Dispatcher(bot)
-
+# Подключаемся к БД
 con, cur = connect_bd("db\\user.db")
-# maid_bd(con, cur)
-# print(get_iser(con, cur, 5600))
 
-# print(get_histori(con, cur, 5600)[0])
-
-
-# Класс пользователя. Позже будем получать БД
-# User = USER()
 
 @dp.message_handler(commands=['help'])
 async def help(message: types.Message):
@@ -49,15 +41,13 @@ async def start(message: types.Message):
                                                                hello = choice(sp)))
     # await bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
     await message.answer("Я Lili, могу скачивать видео и аудио из социальный сетей")
-    # User.reset_file()
-    message.text = ""
     await dowload(message)
-
 
 
 @dp.message_handler(commands=['dowload'])
 async def dowload(message: types.Message):
     '''Перезапуск функции скачки'''
+    message.text = ""
     await wright(message, True)
 
 
@@ -130,15 +120,8 @@ async def wright(message: types.Message, flag:bool=False):
 
     inf = pickle.dumps(User)
     uppdete_user(con, cur, id, inf)
-    
-    
-    
-    
 
 
-
-    
-    
 if __name__ == "__main__":
     # Старт бота
     executor.start_polling(dp)
