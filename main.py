@@ -42,10 +42,7 @@ async def start(message: types.Message):
     file.reset()
     message.text = ""
     await wright(message)
-    
-    
 
-    
 
 @dp.message_handler(commands=['dowload'])
 async def dowload(message: types.Message):
@@ -54,15 +51,13 @@ async def dowload(message: types.Message):
     await wright(message)
 
 
-
 @dp.message_handler(content_types=["text"])
 async def wright(message: types.Message):
     '''Необходима для взаимодействия с пользователем'''
     # message - то что написал пользователь
-    # Пишем то, что написал пользователь
     # print(message.text)
-    
-    if not file.have_net():
+    if not file.check_net() and file.stage == 0:
+        # Выбор соц. сети
         if message.text != "":
             "После того как пользователь ввел соц сеть"
             try:
@@ -71,11 +66,11 @@ async def wright(message: types.Message):
                 # Удаляем кнопки
                 hideBoard = ReplyKeyboardRemove()
                 await message.answer("Введите ссылку: ", reply_markup=hideBoard)
-            except NET_ERROR:
-                await message.answer("Выбрана не верная социальная сеть. Выберете из предложенных")
+            # НЕ УДАЛЯТЬ
+            # except NET_ERROR:
+            #     await message.answer("Выбрана не верная социальная сеть. Выберете из предложенных")
             except Exception as er:
                 await message.answer(er)
-                
         else:
             "До того как пользователь ввел соц сеть"
             # resize_keyboard - адаптация под интерфейс
@@ -87,26 +82,32 @@ async def wright(message: types.Message):
             #markup.add(item1).insert(item2).add(item3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
             
-    elif file.have_net():
+    elif file.check_net() and file.stage == 1:
         '''После того как пользователь ввел ссылку. Соц сеть записана в класс'''
-        print(message.text)
+        # Ввод ссылки
+        # print(message.text)
         # https://www.youtube.com/watch?v=M9dvN4S31ts&t=1s
         # https://vk.com/clips 
         # https://www.youtube.com/shorts/96LQhbSIFWI
         try:
             file.append_link(message.text)
+            await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
+        # НЕ УДАЛЯТЬ
+        # except LINK_ERROR:
+        #     await message.answer("Введена не допустимая ссылка")
+        #     await message.answer("Введите ссылку: ")
         except Exception as er:
             await message.answer(er)
             await message.answer("Введите ссылку: ")
         
-    
-    
-    
-    '''
-    
-    elif file.set != None:
-        "После того как пользователь ввел соц сеть"
-        await message.answer("После того как пользователь ввел соц сеть")'''
+    elif file.check_class_net() and file.stage == 2:
+        '''После того как пользователь ввел и записал:
+            Соц сеть
+            класс соц. сети'''
+        # взаимодействие с классом соц. сети
+        
+        print("juvhoerihroih")
+
         
     
     '''bot.send_message(message.chat.id, message.text)'''
