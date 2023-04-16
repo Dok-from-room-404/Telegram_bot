@@ -8,14 +8,7 @@ from random import choice
 from const import *
 from modle.User import USER
 from modle.User.file import NET_ERROR, LINK_ERROR
-import pickle
-
-
-def get_iser(id):
-    '''Возвращает пользователя из БД'''
-    ...
-    
-
+from modle.command_bd import *
 
 
 
@@ -24,7 +17,13 @@ bot = Bot(TOKEN)
 # Диспечер бота. Отсеживает сообщения
 dp = Dispatcher(bot)
 
+con, cur = connect_bd("db\\user.db")
+#print(get_iser(con, cur, 5600)[0])
+#print(get_histori(con, cur, 5600)[0])
 
+
+# Класс пользователя. Позже будем получать БД
+User = USER()
 
 @dp.message_handler(commands=['help'])
 async def help(message: types.Message):
@@ -35,8 +34,6 @@ async def help(message: types.Message):
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     '''Приветствие пользователя '''
-    # Класс пользователя. Позже будем получать БД
-    User = USER()
     # Список стикеров для приветствия пользователя
     sp = ["static//img/lili_hello.png", "static//img/lili.png"]
     # Стикер приветствия
@@ -44,36 +41,30 @@ async def start(message: types.Message):
     # Список приветствий для пользователя
     sp = ["Добро пожаловать,", "Привет,", "Привет, пользователь"]
     # Пишем  приветствие для пользователя
+    print(message.from_user.id)
     await message.answer("{hello} {user}!".format(user = message.from_user.first_name, 
                                                                hello = choice(sp)))
-                     
     # await bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
     await message.answer("Я Lili, могу скачивать видео и аудио из социальный сетей")
-    User.reset_file()
+    # User.reset_file()
     message.text = ""
-
-    # сохранение в файл
-    with open('User.pickle', 'wb') as f:
-        pickle.dump(User, f)
-        
-    await wright(message)
+    await dowload(message)
 
 
 
 @dp.message_handler(commands=['dowload'])
 async def dowload(message: types.Message):
     '''Перезапуск функции скачки'''
-    with open('User.pickle', 'rb') as f:
-        User = pickle.load(f)
-    User.reset_file()
-    await wright(message)
+    await wright(message, True)
 
 
 @dp.message_handler(content_types=["text"])
-async def wright(message: types.Message):
+async def wright(message: types.Message, flag:bool=False):
     '''Необходима для взаимодействия с пользователем'''
-    with open('User.pickle', 'rb') as f:
-        User = pickle.load(f)
+    
+    if flag:
+        "Перезапуск функции скачки"
+        User.reset_file()
         
     if User.sheck_stage_0():
         # Выбор соц. сети
