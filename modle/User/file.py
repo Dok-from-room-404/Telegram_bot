@@ -125,6 +125,10 @@ class File(object):
         except:
             raise LINK_ERROR("Введена не допустимая ссылка 5")
         
+    def get_format(self) -> set:
+        '''Возвращает возможные форматы файлов'''
+        return self.__class_net.format()
+        
 
         
         
