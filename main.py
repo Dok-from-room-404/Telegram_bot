@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from random import choice
 from const import *
-from file import File
+from file import File, NET_ERROR, LINK_ERROR
 
 
 
@@ -60,16 +60,24 @@ async def wright(message: types.Message):
     '''Необходима для взаимодействия с пользователем'''
     # message - то что написал пользователь
     # Пишем то, что написал пользователь
-    print(message.text)
+    # print(message.text)
+    
     if not file.have_net():
         if message.text != "":
+            "После того как пользователь ввел соц сеть"
             try:
                 file.append_net(message.text)
+                await message.answer("Вы выбрали: {0}".format(message.text))
+                # Удаляем кнопки
+                hideBoard = ReplyKeyboardRemove()
+                await message.answer("Введите ссылку: ", reply_markup=hideBoard)
+            except NET_ERROR:
+                await message.answer("Выбрана не верная социальная сеть. Выберете из предложенных")
             except Exception as er:
-                print("error")
                 await message.answer(er)
                 
         else:
+            "До того как пользователь ввел соц сеть"
             # resize_keyboard - адаптация под интерфейс
             markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3) # default - False
             b1 = KeyboardButton('YouTube')
@@ -78,34 +86,23 @@ async def wright(message: types.Message):
             markup.add(b1, b2, b3)
             #markup.add(item1).insert(item2).add(item3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
+            
+    elif file.have_net():
+        '''После того как пользователь ввел ссылку. Соц сеть записана в класс'''
+        print(message.text)
+        # https://www.youtube.com/watch?v=M9dvN4S31ts&t=1s
+        # https://vk.com/clips 
+        # https://www.youtube.com/shorts/96LQhbSIFWI
+        try:
+            file.append_link(message.text)
+        except Exception as er:
+            await message.answer(er)
+            await message.answer("Введите ссылку: ")
+        
     
     
     
     '''
-    if file.set == None:
-        "До того как пользователь ввел соц сеть"
-        if message.text == "YouTube":
-            file.set = "YouTube"
-            # Удаляем кнопки
-            hideBoard = ReplyKeyboardRemove()
-            await message.answer("Введи ссылку: ", reply_markup=hideBoard)
-        elif message.text == "TikTok":
-            file.set = "TikTok"
-            # Удаляем кнопки
-            await message.answer("Введи ссылку: ", reply_markup=ReplyKeyboardRemove())
-        elif message.text == "VK":
-            file.set = "VK"
-            # Удаляем кнопки
-            await message.answer("Введи ссылку: ", reply_markup=ReplyKeyboardRemove())
-        else:
-            # resize_keyboard - адаптация под интерфейс
-            markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3) # default - False
-            b1 = KeyboardButton('YouTube')
-            b2 = KeyboardButton('TikTok')
-            b3 = KeyboardButton('VK')
-            markup.add(b1, b2, b3)
-            #markup.add(item1).insert(item2).add(item3)
-            await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
     
     elif file.set != None:
         "После того как пользователь ввел соц сеть"
