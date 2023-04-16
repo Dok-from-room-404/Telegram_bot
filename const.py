@@ -6,7 +6,7 @@
 Данный файл содержит константы для работы бота
 '''
 
-TOKEN = "6218093072:AAHR9dUmAo24AcMOmWIl-QIGe3Ln2btGQuA" # Токе бота от BotFather
+TOKEN = "6218093072:AAHR9dUmAo24AcMOmWIl-QIGe3Ln2btGQuA" # Токен бота от BotFather
 
 TEXT_FOR_HELP = '''
 Список доступных команд:
@@ -16,7 +16,19 @@ TEXT_FOR_HELP = '''
 '''
 
 
-class File():
+class File(object):
     '''Класс файла который будет обрабатывать бот. 
-       Необходим чтобы бот понимал накаком он этапе обработки файла'''
-    set = None
+       Необходим чтобы бот понимал на каком он этапе обработки файла'''
+   
+    def __init__(self) -> None:
+        '''Инициализация класса с основными атрибутами'''
+        self.set = None # Социальная сеть
+        self.class_set = None # Класс социальной сети (нужен для скачивания)
+        
+    def reset(self) -> None:
+        '''Сброс настроек класса'''
+        self.set = None
+        self.class_set = None
+      
+       
+    
