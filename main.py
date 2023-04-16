@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from random import choice
 from const import *
-from file import File, NET_ERROR, LINK_ERROR
+from modle.User import File, NET_ERROR, LINK_ERROR
 
 
 
@@ -105,7 +105,6 @@ async def wright(message: types.Message):
             Соц сеть
             класс соц. сети'''
         # взаимодействие с классом соц. сети
-        
         print("juvhoerihroih")
 
         
