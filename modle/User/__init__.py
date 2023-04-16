@@ -20,6 +20,11 @@ class USER:
     def append_link(self, link:str):
         '''Добавление ссылки и класса социальной сети'''
         self.file.append_link(link)
+        
+    def get_format(self) -> set:
+        '''Возвращает возможные форматы файлов'''
+        return self.file.get_format()
+        
 
     def sheck_stage_0(self) -> bool: 
         '''Проверка на стадию 0 (Выбор соц. сети):
