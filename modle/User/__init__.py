@@ -37,6 +37,7 @@ class USER:
         '''Проверка на стадию 2 (взаимодействие с классом соц. сети):
         \t* True - текущая стадия 2
         \t* False - текущая стадия 2'''
+        print("state 2")
         return self.file.check_class_net() and self.file.stage == 2
         
         
