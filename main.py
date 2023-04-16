@@ -6,7 +6,16 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from random import choice
 from const import *
-from modle.User import File, NET_ERROR, LINK_ERROR
+from modle.User import USER
+from modle.User.file import NET_ERROR, LINK_ERROR
+import pickle
+
+
+def get_iser(id):
+    '''Возвращает пользователя из БД'''
+    ...
+    
+
 
 
 
@@ -14,8 +23,7 @@ from modle.User import File, NET_ERROR, LINK_ERROR
 bot = Bot(TOKEN)
 # Диспечер бота. Отсеживает сообщения
 dp = Dispatcher(bot)
-# Класс файла который будет обрабатывать бот. Необходим чтобы бот понимал на каком он этапе обработки файла
-file = File()
+
 
 
 @dp.message_handler(commands=['help'])
@@ -27,6 +35,8 @@ async def help(message: types.Message):
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     '''Приветствие пользователя '''
+    # Класс пользователя. Позже будем получать БД
+    User = USER()
     # Список стикеров для приветствия пользователя
     sp = ["static//img/lili_hello.png", "static//img/lili.png"]
     # Стикер приветствия
@@ -38,30 +48,39 @@ async def start(message: types.Message):
                                                                hello = choice(sp)))
                      
     # await bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
-    await message.answer("Я могу скачивать видео и аудио из социальный сетей")
-    file.reset()
+    await message.answer("Я Lili, могу скачивать видео и аудио из социальный сетей")
+    User.reset_file()
     message.text = ""
+
+    # сохранение в файл
+    with open('User.pickle', 'wb') as f:
+        pickle.dump(User, f)
+        
     await wright(message)
+
 
 
 @dp.message_handler(commands=['dowload'])
 async def dowload(message: types.Message):
     '''Перезапуск функции скачки'''
-    file.reset()
+    with open('User.pickle', 'rb') as f:
+        User = pickle.load(f)
+    User.reset_file()
     await wright(message)
 
 
 @dp.message_handler(content_types=["text"])
 async def wright(message: types.Message):
     '''Необходима для взаимодействия с пользователем'''
-    # message - то что написал пользователь
-    # print(message.text)
-    if not file.check_net() and file.stage == 0:
+    with open('User.pickle', 'rb') as f:
+        User = pickle.load(f)
+        
+    if User.sheck_stage_0():
         # Выбор соц. сети
         if message.text != "":
             "После того как пользователь ввел соц сеть"
             try:
-                file.append_net(message.text)
+                User.append_net(message.text)
                 await message.answer("Вы выбрали: {0}".format(message.text))
                 # Удаляем кнопки
                 hideBoard = ReplyKeyboardRemove()
@@ -82,15 +101,14 @@ async def wright(message: types.Message):
             #markup.add(item1).insert(item2).add(item3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
             
-    elif file.check_net() and file.stage == 1:
+    elif User.sheck_stage_1():
         '''После того как пользователь ввел ссылку. Соц сеть записана в класс'''
         # Ввод ссылки
-        # print(message.text)
         # https://www.youtube.com/watch?v=M9dvN4S31ts&t=1s
         # https://vk.com/clips 
         # https://www.youtube.com/shorts/96LQhbSIFWI
         try:
-            file.append_link(message.text)
+            User.append_link(message.text)
             await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
         # НЕ УДАЛЯТЬ
         # except LINK_ERROR:
@@ -100,7 +118,7 @@ async def wright(message: types.Message):
             await message.answer(er)
             await message.answer("Введите ссылку: ")
         
-    elif file.check_class_net() and file.stage == 2:
+    elif User.sheck_stage_2():
         '''После того как пользователь ввел и записал:
             Соц сеть
             класс соц. сети'''
@@ -109,7 +127,7 @@ async def wright(message: types.Message):
 
         
     
-    '''bot.send_message(message.chat.id, message.text)'''
+    
     
     
 
