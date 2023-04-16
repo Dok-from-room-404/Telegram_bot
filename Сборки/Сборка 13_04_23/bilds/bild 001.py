@@ -9,8 +9,8 @@ yt = YouTube('https://www.youtube.com/shorts/96LQhbSIFWI') #ссылка на в
 # (mp4(720) + audio или только mp4(1080) без звука). 
 # Сейчас стоит фильтр по mp4.
 print(type(yt.streams))
-for i in yt.streams.filter(file_extension='mp4'):
-    print(i)
+for i in yt.streams:#.filter(file_extension='mp4'):
+    print(i.mime_type.replace(i.type, "")[1:])
 
 
 #print(yt.streams.filter(file_extension='mp4')) 
