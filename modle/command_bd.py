@@ -11,7 +11,8 @@
 * maid_bd - Создает базу данных
 * get_iser - Возвращает пользователя из БД
 * get_histori - Возвращает историю по пользователю
-* append_User - Добавляем пользователя
+* append_user - Добавляем пользователя
+* uppdete_user - Обновляет информацию о пользователе
 '''
 from sqlite3 import connect, Connection, Cursor
 
@@ -64,16 +65,17 @@ def get_histori(con:Connection, cur:Cursor, id:int):
     con.commit()
     return res
 
+
 def append_user(con:Connection, cur:Cursor, id:int, user):
     '''Добавляем пользователя'''
     cur.execute('''INSERT INTO users (user_id, user)
-                    VALUES ({id}, {user})'''.format(id = id, user = user))
+                    VALUES (?, ?)''', (id, user))#, user = user))
     con.commit()
 
 
 def uppdete_user(con:Connection, cur:Cursor, id:int, user):
     '''Обновляет информацию о пользователе'''
     cur.execute('''UPDATE users 
-                    set user = {user}
-                        where user_id = {id}'''.format(id = id, user = user))
+                    set user = ?
+                        where user_id = ?''', (user, id))
     con.commit()
