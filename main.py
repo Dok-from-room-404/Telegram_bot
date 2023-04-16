@@ -117,7 +117,8 @@ async def wright(message: types.Message, flag:bool=False):
             класс соц. сети'''
         # взаимодействие с классом соц. сети
         print("juvhoerihroih")
-
+        
+    # Сохранение изменений в БД
     inf = pickle.dumps(User)
     uppdete_user(con, cur, id, inf)
 
