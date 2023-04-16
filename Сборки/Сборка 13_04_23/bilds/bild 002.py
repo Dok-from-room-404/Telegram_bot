@@ -7,8 +7,8 @@ api = TikTokApi.get_instance()
 
 results = 10
 
-# Since TikTok changed their API you need to use the custom_verifyFp option. 
-# In your web browser you will need to go to TikTok, Log in and get the s_v_web_id value.
+# Поскольку TikTok изменил свой API, вам нужно использовать опцию custom_verifyFp.
+# В своем веб-браузере вам нужно будет зайти в TikTok, войти в систему и получить значение s_v_web_id.
 trending = api.trending(count=results, custom_verifyFp="")
 
 for tiktok in trending:
