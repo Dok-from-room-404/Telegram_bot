@@ -9,6 +9,8 @@ from const import *
 from modle.User import USER
 from modle.User.file import NET_ERROR, LINK_ERROR
 from modle.command_bd import *
+from io import BytesIO
+import pickle
 
 
 
@@ -18,12 +20,14 @@ bot = Bot(TOKEN)
 dp = Dispatcher(bot)
 
 con, cur = connect_bd("db\\user.db")
-#print(get_iser(con, cur, 5600)[0])
-#print(get_histori(con, cur, 5600)[0])
+# maid_bd(con, cur)
+# print(get_iser(con, cur, 5600))
+
+# print(get_histori(con, cur, 5600)[0])
 
 
 # Класс пользователя. Позже будем получать БД
-User = USER()
+# User = USER()
 
 @dp.message_handler(commands=['help'])
 async def help(message: types.Message):
@@ -41,7 +45,6 @@ async def start(message: types.Message):
     # Список приветствий для пользователя
     sp = ["Добро пожаловать,", "Привет,", "Привет, пользователь"]
     # Пишем  приветствие для пользователя
-    print(message.from_user.id)
     await message.answer("{hello} {user}!".format(user = message.from_user.first_name, 
                                                                hello = choice(sp)))
     # await bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
@@ -61,6 +64,15 @@ async def dowload(message: types.Message):
 @dp.message_handler(content_types=["text"])
 async def wright(message: types.Message, flag:bool=False):
     '''Необходима для взаимодействия с пользователем'''
+    # Класс пользователя. Получаем с БД
+    id = message.from_user.id
+    inform = get_iser(con, cur, id)
+    if inform == None:
+        User = USER()
+        inf = pickle.dumps(User)
+        append_user(con, cur, id, inf)
+    else:
+        User = pickle.loads(inform[0])
     
     if flag:
         "Перезапуск функции скачки"
@@ -116,7 +128,8 @@ async def wright(message: types.Message, flag:bool=False):
         # взаимодействие с классом соц. сети
         print("juvhoerihroih")
 
-        
+    inf = pickle.dumps(User)
+    uppdete_user(con, cur, id, inf)
     
     
     
