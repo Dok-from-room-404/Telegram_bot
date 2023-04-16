@@ -2,7 +2,6 @@
 
 
 
-'''Тупая болванка'''
 from pytube import YouTube
 
 
@@ -15,9 +14,9 @@ class File_YouTube:
         # видео на YouTube (неопределено по формату и качеству)
         self.yt = YouTube(link)
         
-    def format(self):
+    def format(self) -> set:
         '''Определяем формат у видео'''
         formats = set()
         for i in self.yt.streams:
             formats.add(i.mime_type.replace(i.type, "")[1:])
-        print(formats)
+        return formats
