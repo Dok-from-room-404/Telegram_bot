@@ -142,7 +142,7 @@ async def wright(message: types.Message, flag:bool=False):
     if User.sheck_stage_3():
         # Если ввод типа файла
         if flag:
-            types = User.file.found_type(message.text)
+            types = User.file.found_type()
             if len(types) == 2:
                 markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=2)
                 markup.add(KeyboardButton("Видео")).insert(KeyboardButton("Аудио"))
@@ -152,7 +152,7 @@ async def wright(message: types.Message, flag:bool=False):
                 flag = True
         else:
             try:
-                User.file.append_type(*types)
+                User.file.append_type(message.text)
                 flag = True
             # НЕ УДАЛЯТЬ
             # except FORMAT_ERROR:
