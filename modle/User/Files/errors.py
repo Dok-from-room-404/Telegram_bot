@@ -47,4 +47,15 @@ class FORMAT_ERROR(Exception):
             return 'FORMAT_ERROR: {0} '.format(self.inform)
         else:
             return 'FORMAT_ERROR'
-        
+
+
+class TYPE_ERROR(Exception):
+    '''Класс ошибки. Возникает при выборе недопустимый тип файла'''
+    def __init__(self, inform="") -> None:
+        self.inform = inform
+
+    def __str__(self):
+        if self.inform:
+            return 'TYPE_ERROR: {0} '.format(self.inform)
+        else:
+            return 'TYPE_ERROR'
