@@ -124,8 +124,10 @@ async def wright(message: types.Message, flag:bool=False):
         else:
             try:
                 '''После того, как пользователь ввел формат файла'''
-                User.file.append_format(message.text)
                 await message.answer("Вы ввели следующий формат : {0}".format(message.text))
+                if User.file.append_format(message.text):
+                    await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
+
                 # flag = True
             # НЕ УДАЛЯТЬ
             # except FORMAT_ERROR:
