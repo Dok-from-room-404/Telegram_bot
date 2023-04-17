@@ -127,9 +127,14 @@ class File(object):
     
     def append_type(self, type:str) -> None:
         '''Устанавливает тип type скачиваемому файлу'''
+        if type == "Видео":
+            type = "vidio"
+        if type == "Аудио":
+            type = "audio" 
         if type not in self.found_type():
             raise TYPE_ERROR("Выбран не верный тип")
         self.__class_net.set_type(type)
+        self.__stage = 4
 
 
     def reset(self) -> None:
