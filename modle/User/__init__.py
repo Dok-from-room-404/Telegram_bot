@@ -55,3 +55,9 @@ class USER:
         print("state 3")
         return self.file.stage == 3  
         
+    def sheck_stage_4(self) -> bool: 
+        '''Выбор бит рейда у аудио дорожки или выбор разрешения видео:
+        \t* True - текущая стадия 4
+        \t* False - текущая стадия 4'''
+        print("state 4")
+        return self.file.stage == 4 
