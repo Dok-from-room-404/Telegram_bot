@@ -7,9 +7,8 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 from random import choice
 from const import *
 from modle.User import USER
-from modle.User.file import NET_ERROR, LINK_ERROR
-from modle.command_bd import *
-import pickle
+from modle.User.command_bd import *
+# from modle.User.file import NET_ERROR, LINK_ERROR
 
 
 
@@ -19,6 +18,7 @@ bot = Bot(TOKEN)
 dp = Dispatcher(bot)
 # Подключаемся к БД
 con, cur = connect_bd("db\\user.db")
+# maid_bd(con, cur)
 
 
 @dp.message_handler(commands=['help'])
@@ -56,24 +56,24 @@ async def wright(message: types.Message, flag:bool=False):
     '''Необходима для взаимодействия с пользователем'''
     # Класс пользователя. Получаем с БД
     id = message.from_user.id
-    inform = get_iser(con, cur, id)
-    if inform == None:
+    User = get_iser(cur, id)
+    if User == None:
         User = USER()
-        inf = pickle.dumps(User)
-        append_user(con, cur, id, inf)
-    else:
-        User = pickle.loads(inform[0])
+        #inf = pickle.dumps(User)
+        append_user(con, cur, id, User)
+    # else:
+    #     User = pickle.loads(inform[0])
     
     if flag:
         "Перезапуск функции скачки"
-        User.reset_file()
+        User.file.reset()
     
     if User.sheck_stage_0():
         # Если выбор соц. сети
         if message.text != "":
             "После того как пользователь ввел соц сеть"
             try:
-                User.append_net(message.text)
+                User.file.append_net(message.text)
                 await message.answer("Вы выбрали: {0}".format(message.text))
                 # Удаляем кнопки
                 hideBoard = ReplyKeyboardRemove()
@@ -104,10 +104,10 @@ async def wright(message: types.Message, flag:bool=False):
         # https://www.youtube.com/shorts/96LQhbSIFWI
         try:
             '''После того, как пользователь ввел ссылку'''
-            User.append_link(message.text)
+            User.file.append_link(message.text)
             await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
             # Сохранение изменений в БД (тут из-за рекурсии)
-            uppdete_user(con, cur, id, pickle.dumps(User))
+            uppdete_user(con, cur, id, User)
             await wright(message)
             
         # НЕ УДАЛЯТЬ
@@ -123,15 +123,21 @@ async def wright(message: types.Message, flag:bool=False):
         '''После того как пользователь ввел и записал:
             Соц сеть
             класс соц. сети'''
-        # Если взаимодействие с классом соц. сети
+        # Спрашиваем формат файла
         markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
-        formats = User.get_format()
-        #print(formats)
-        for i in formats:
+        for i in User.file.get_format():
+            # Добавляем на кнопки форматы
             markup.insert(KeyboardButton(i))
-        await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
+        await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
+    
+    elif User.sheck_stage_3():
+        ''''''
+        
+        
+        
+        
     # Сохранение изменений в БД
-    uppdete_user(con, cur, id, pickle.dumps(User))
+    uppdete_user(con, cur, id, User)
 
 
 if __name__ == "__main__":
