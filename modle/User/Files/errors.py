@@ -19,7 +19,6 @@ class NET_ERROR(Exception):
         self.inform = inform
 
     def __str__(self):
-        print('calling str')
         if self.inform:
             return 'NET_ERROR: {0} '.format(self.inform)
         else:
@@ -32,8 +31,20 @@ class LINK_ERROR(Exception):
         self.inform = inform
 
     def __str__(self):
-        print('calling str')
         if self.inform:
             return 'LINK_ERROR: {0} '.format(self.inform)
         else:
             return 'LINK_ERROR'
+
+
+class FORMAT_ERROR(Exception):
+    '''Класс ошибки. Возникает при выборе недопустимый формат файла'''
+    def __init__(self, inform="") -> None:
+        self.inform = inform
+
+    def __str__(self):
+        if self.inform:
+            return 'FORMAT_ERROR: {0} '.format(self.inform)
+        else:
+            return 'FORMAT_ERROR'
+        
