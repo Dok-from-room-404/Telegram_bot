@@ -6,10 +6,9 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from random import choice
 from const import *
-from modle.User import USER
+from modle.User import USER # NET_ERROR, LINK_ERROR, FORMAT_ERROR
 from modle.User.command_bd import *
 # from modle.User.file import NET_ERROR, LINK_ERROR
-
 
 
 # Экземпляр бота
@@ -59,14 +58,14 @@ async def wright(message: types.Message, flag:bool=False):
     User = get_iser(cur, id)
     if User == None:
         User = USER()
-        #inf = pickle.dumps(User)
         append_user(con, cur, id, User)
-    # else:
-    #     User = pickle.loads(inform[0])
     
     if flag:
         "Перезапуск функции скачки"
         User.file.reset()
+    
+    # Флаг первичного запроса данных
+    flag = False
     
     if User.sheck_stage_0():
         # Если выбор соц. сети
@@ -75,10 +74,7 @@ async def wright(message: types.Message, flag:bool=False):
             try:
                 User.file.append_net(message.text)
                 await message.answer("Вы выбрали: {0}".format(message.text))
-                # Удаляем кнопки
-                hideBoard = ReplyKeyboardRemove()
-                await message.answer("Введите ссылку: ", reply_markup=hideBoard)
-                
+                flag = True
             # НЕ УДАЛЯТЬ
             # except NET_ERROR:
             #     await message.answer("Выбрана не верная социальная сеть. Выберете из предложенных")
@@ -94,45 +90,52 @@ async def wright(message: types.Message, flag:bool=False):
             markup.add(b1, b2, b3)
             #markup.add(item1).insert(item2).add(item3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
-        
             
-    elif User.sheck_stage_1():
-        '''После того как пользователь ввел ссылку. Соц сеть записана в класс'''
-        # Если  ввод ссылки
-        # https://www.youtube.com/watch?v=M9dvN4S31ts&t=1s
-        # https://vk.com/clips 
-        # https://www.youtube.com/shorts/96LQhbSIFWI
-        try:
-            '''После того, как пользователь ввел ссылку'''
-            User.file.append_link(message.text)
-            await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
-            # Сохранение изменений в БД (тут из-за рекурсии)
-            uppdete_user(con, cur, id, User)
-            await wright(message)
+    if User.sheck_stage_1():
+        # Если ввод ссылки
+        if flag:
+            # Удаляем кнопки
+            hideBoard = ReplyKeyboardRemove()
+            await message.answer("Введите ссылку: ", reply_markup=hideBoard)
+        else:
+            try:
+                '''После того, как пользователь ввел ссылку'''
+                User.file.append_link(message.text)
+                await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
+                flag = True
+            # НЕ УДАЛЯТЬ
+            # except LINK_ERROR:
+            #     await message.answer("Введена не допустимая ссылка")
+            #     await message.answer("Введите ссылку: ")
+            except Exception as er:
+                '''Недопустимая ссылка'''
+                await message.answer(er)
+                await message.answer("Введите ссылку: ")
             
-        # НЕ УДАЛЯТЬ
-        # except LINK_ERROR:
-        #     await message.answer("Введена не допустимая ссылка")
-        #     await message.answer("Введите ссылку: ")
-        except Exception as er:
-            '''До того, как пользователь ввел ссылку'''
-            await message.answer(er)
-            await message.answer("Введите ссылку: ")
-        
-    elif User.sheck_stage_2():
-        '''После того как пользователь ввел и записал:
-            Соц сеть
-            класс соц. сети'''
-        # Спрашиваем формат файла
-        markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
-        for i in User.file.get_format():
-            # Добавляем на кнопки форматы
-            markup.insert(KeyboardButton(i))
-        await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
-    
-    elif User.sheck_stage_3():
-        ''''''
-        
+    if User.sheck_stage_2():
+        # Если ввод формата файла
+        if flag:
+            markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+            for i in User.file.get_format():
+                # Добавляем на кнопки форматы
+                markup.insert(KeyboardButton(i))
+            await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
+            
+        else:
+            try:
+                '''После того, как пользователь ввел формат файла'''
+                User.file.append_format(message.text)
+                await message.answer("Вы ввели следующий формат : {0}".format(message.text))
+                # flag = True
+            # НЕ УДАЛЯТЬ
+            # except FORMAT_ERROR:
+            #     await message.answer("Введен недопустимый формат файла. Выберете из предложенных")
+            except Exception as er:
+                '''Недопустимый формат файла'''
+                await message.answer(er)
+            
+
+
         
         
         
