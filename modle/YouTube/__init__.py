@@ -31,3 +31,12 @@ class File_YouTube:
         # Отсекаем не нужные форматы
         self.inform = self.yt.streams.filter(file_extension=format)
         return False
+    
+    def found_vidio(self) -> bool:
+        '''Поиск видео в фильтре по формату
+            \n* True - выбранный формат не поддерживает видео 
+            \n* False - выбранный формат поддерживает видео '''
+        for i in self.inform:
+            if i.type == "video":
+                return False
+        return True
