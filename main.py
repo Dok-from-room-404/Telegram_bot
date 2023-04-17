@@ -127,15 +127,37 @@ async def wright(message: types.Message, flag:bool=False):
                 await message.answer("Вы ввели следующий формат : {0}".format(message.text))
                 if User.file.append_format(message.text):
                     await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
-
-                # flag = True
+                flag = True
             # НЕ УДАЛЯТЬ
             # except FORMAT_ERROR:
             #     await message.answer("Введен недопустимый формат файла. Выберете из предложенных")
             except Exception as er:
                 '''Недопустимый формат файла'''
                 await message.answer(er)
-            
+    
+    if User.sheck_stage_question_format():
+        '''Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?'''
+        # Пока пусто. Будем использовать при вопросе
+        
+    if User.sheck_stage_3():
+        # Если ввод типа файла
+        if flag:
+            types = User.file.found_type(message.text)
+            if len(types) == 2:
+                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=2)
+                markup.add(KeyboardButton("Видео")).insert(KeyboardButton("Аудио"))
+                await message.answer("Выберете необходимый вам тип файла", reply_markup=markup)
+            if len(types) == 1:
+                ...
+        else:
+            try:
+                ...
+            # НЕ УДАЛЯТЬ
+            # except FORMAT_ERROR:
+            #     await message.answer("Введен недопустимый тип файла. Выберете из предложенных")
+            except Exception as er:
+                ''''''
+                ...
 
 
         
