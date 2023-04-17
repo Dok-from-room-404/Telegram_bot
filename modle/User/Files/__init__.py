@@ -20,7 +20,7 @@
 '''
 from modle.YouTube import *
 from .const import NET
-from .errors import NET_ERROR, LINK_ERROR
+from .errors import NET_ERROR, LINK_ERROR, FORMAT_ERROR
 
 
 
@@ -101,8 +101,13 @@ class File(object):
         
     def get_format(self) -> set:
         '''Возвращает возможные форматы файлов'''
-        self.__stage = 3
         return self.__class_net.format()
+    
+    def append_format(self, format:str) -> None:
+        '''Устанавливает формат format скачиваемому файлу'''
+        if self.__class_net.set_format(format):
+            raise FORMAT_ERROR("Введен недопустимый формат файла")
+        self.__stage = 3
 
 
     def reset(self) -> None:
