@@ -129,6 +129,7 @@ class File(object):
         '''Устанавливает тип type скачиваемому файлу'''
         if type not in self.found_type():
             raise TYPE_ERROR("Выбран не верный тип")
+        self.__class_net.set_type(type)
 
 
     def reset(self) -> None:
