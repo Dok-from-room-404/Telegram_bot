@@ -54,5 +54,5 @@ class File_YouTube:
         '''Устанавливает тип type скачиваемому файлу
             \n* True - выбранный формат не находится в списке допустимых 
             \n* False - выбранный формат находится в списке допустимых'''
-        self.inform = self.inform.filter(file_extension=format)
+        self.inform = self.inform.filter(type=type)
         
