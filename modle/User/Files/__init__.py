@@ -20,7 +20,7 @@
 '''
 from modle.YouTube import *
 from .const import NET
-from .errors import NET_ERROR, LINK_ERROR, FORMAT_ERROR
+from .errors import NET_ERROR, LINK_ERROR, FORMAT_ERROR, TYPE_ERROR
 
 
 
@@ -115,6 +115,20 @@ class File(object):
         else:
             self.__stage = 3
             return False
+        
+    def found_type(self) -> list:
+        '''Проверяет наличие аудио и видео типов в выбранном формате'''
+        list = []
+        if not self.__class_net.found_vidio():
+            list.append("vidio")
+        if not self.__class_net.found_audio():
+            list.append("audio")
+        return list
+    
+    def append_type(self, type:str) -> None:
+        '''Устанавливает тип type скачиваемому файлу'''
+        if type not in self.found_type():
+            raise TYPE_ERROR("Выбран не верный тип")
 
 
     def reset(self) -> None:
