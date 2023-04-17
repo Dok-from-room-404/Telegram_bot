@@ -40,3 +40,19 @@ class File_YouTube:
             if i.type == "video":
                 return False
         return True
+    
+    def found_audio(self) -> bool:
+        '''Поиск аудио в фильтре по формату
+            \n* True - выбранный формат не поддерживает аудио 
+            \n* False - выбранный формат поддерживает аудио '''
+        for i in self.inform:
+            if i.type == "audio":
+                return False
+        return True
+    
+    def set_type(self, type:str) -> None:
+        '''Устанавливает тип type скачиваемому файлу
+            \n* True - выбранный формат не находится в списке допустимых 
+            \n* False - выбранный формат находится в списке допустимых'''
+        self.inform = self.inform.filter(file_extension=format)
+        
