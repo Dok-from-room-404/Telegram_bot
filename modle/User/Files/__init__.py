@@ -101,6 +101,7 @@ class File(object):
         
     def get_format(self) -> set:
         '''Возвращает возможные форматы файлов'''
+        self.__stage = 3
         return self.__class_net.format()
 
 
