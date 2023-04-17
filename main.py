@@ -148,16 +148,18 @@ async def wright(message: types.Message, flag:bool=False):
                 markup.add(KeyboardButton("Видео")).insert(KeyboardButton("Аудио"))
                 await message.answer("Выберете необходимый вам тип файла", reply_markup=markup)
             if len(types) == 1:
-                ...
+                User.file.append_type(*types)
+                flag = True
         else:
             try:
-                ...
+                User.file.append_type(*types)
+                flag = True
             # НЕ УДАЛЯТЬ
             # except FORMAT_ERROR:
             #     await message.answer("Введен недопустимый тип файла. Выберете из предложенных")
             except Exception as er:
-                ''''''
-                ...
+                '''Недопустимый тип файла'''
+                await message.answer(er)
 
 
         
