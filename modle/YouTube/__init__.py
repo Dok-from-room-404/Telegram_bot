@@ -13,10 +13,9 @@ class File_YouTube:
         * link - Ссылка на видео'''
         # видео на YouTube (неопределено по формату и качеству)
         self.yt = YouTube(link)
+        self.formats = set()
         
     def format(self) -> set:
         '''Определяем формат у видео'''
-        formats = set()
-        for i in self.yt.streams:
-            formats.add(i.mime_type.replace(i.type, "")[1:])
-        return formats
+        self.formats = set(map(lambda i: i.mime_type.replace(i.type, "")[1:], self.yt.streams))
+        return self.formats
