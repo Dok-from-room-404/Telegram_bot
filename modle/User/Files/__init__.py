@@ -38,84 +38,55 @@ class File(object):
            \n\t* 1 -  Ввод ссылки
            \n\t* 2 и более – взаимодействие с классом соц. сети
            '''
-        self.__net = None # Социальная сеть
         self.__class_net = None # Класс социальной сети (нужен для скачивания)
         self.__stage = 0 # Стадия скачивания файла
-        
-    @property
-    def net(self):
-        '''Социальная сеть'''
-        return self.__net
     
     @property
     def stage(self):
         '''Стадия скачивания файла'''
         return self.__stage
-        
-    def check_net(self) -> bool:
-        '''Проверка на наличие социальной сети:
-           \n* True - есть социальная сеть
-           \n* False - нету социальной сети'''
-        return self.__net != None
     
-    def check_class_net(self) -> bool:
-        '''Проверка на наличие класса социальной сети:
-           \n* True - есть класс
-           \n* False - нету класса'''
-        return self.__class_net != None
-    
+    # stage = 0
     def append_net(self, name_net:str) -> None:
         '''Добавление социальной сети'''
         if name_net in NET:
-            self.__net = name_net
+            if name_net == "YouTube":
+                self.__class_net = File_YouTube()
+                
+            if name_net == "TikTok":
+                ...
+                
+            if name_net == "VK":
+                ...
+                
             self.__stage = 1
         else:
             raise NET_ERROR("Выбрана не верная социальная сеть. Выберете из предложенных")
         
+    # stage = 1
     def append_link(self, link:str):
         '''Добавление ссылки и класса социальной сети'''
-        # Проверка на правильное начало ссылки
-        if not link.startswith("https://www") and not (self.__net == "VK" and link.startswith("https://")):
-            raise LINK_ERROR("Введена не допустимая ссылка 1")
-        
-        if self.__net == "YouTube" and "youtube.com" not in link:
-            raise LINK_ERROR("Введена не допустимая ссылка 2")
-        
-        elif self.__net == "TikTok" and "tiktok.com" not in link:
-            raise LINK_ERROR("Введена не допустимая ссылка 3")
-        
-        elif self.__net == "VK" and "vk.com" not in link:
-            raise LINK_ERROR("Введена не допустимая ссылка 4")
         try:
-            if self.__net == "YouTube":
-                self.__class_net = File_YouTube(link)
-                
-            elif self.__net == "TikTok":
-                ...
-                
-            elif self.__net == "VK":
-                ...
+            self.__class_net.append_link(link)
             self.__stage = 2
-        except:
-            raise LINK_ERROR("Введена не допустимая ссылка 5")
+        except Exception as er:
+            raise LINK_ERROR("Введена не допустимая ссылка: {message}".format(message = er))
         
+    # stage = 2
     def get_format(self) -> set:
         '''Возвращает возможные форматы файлов'''
         return self.__class_net.format()
     
     def append_format(self, format:str):
         '''Устанавливает формат format скачиваемому файлу'''
-            #\n* True - выбранный формат не поддерживает видео 
-            #\n* False - выбранный формат поддерживает видео'''
         if self.__class_net.set_format(format):
             raise FORMAT_ERROR("Введен недопустимый формат файла")
         if self.__class_net.found_vidio():
             self.__stage = "question_format"
-            #return True
         else:
             self.__stage = 3
-            #return False
         
+    # stage = "question_format"
     def check_question_format(self, answer:str):
         '''Проверка ответа'''
         if answer.lower() != "да":
@@ -125,6 +96,7 @@ class File(object):
         else:
             raise ValueError("Недопустимое значение")
         
+    # stage = 3
     def found_type(self) -> list:
         '''Проверяет наличие аудио и видео типов в выбранном формате'''
         list = []
@@ -136,10 +108,9 @@ class File(object):
     
     def append_type(self, type:str) -> None:
         '''Устанавливает тип type скачиваемому файлу'''
-        if type == "Видео":
-            type = "vidio"
-        if type == "Аудио":
-            type = "audio" 
+        if type == "Видео": type = "vidio"
+        if type == "Аудио": type = "audio" 
+        
         if type not in self.found_type():
             raise TYPE_ERROR("Выбран не верный тип")
         self.__class_net.set_type(type)
