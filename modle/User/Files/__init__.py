@@ -103,18 +103,27 @@ class File(object):
         '''Возвращает возможные форматы файлов'''
         return self.__class_net.format()
     
-    def append_format(self, format:str) -> bool:
-        '''Устанавливает формат format скачиваемому файлу
-            \n* True - выбранный формат не поддерживает видео 
-            \n* False - выбранный формат поддерживает видео'''
+    def append_format(self, format:str):
+        '''Устанавливает формат format скачиваемому файлу'''
+            #\n* True - выбранный формат не поддерживает видео 
+            #\n* False - выбранный формат поддерживает видео'''
         if self.__class_net.set_format(format):
             raise FORMAT_ERROR("Введен недопустимый формат файла")
         if self.__class_net.found_vidio():
             self.__stage = "question_format"
-            return True
+            #return True
         else:
             self.__stage = 3
-            return False
+            #return False
+        
+    def check_question_format(self, answer:str):
+        '''Проверка ответа'''
+        if answer.lower() != "да":
+            self.__stage = 2
+        elif answer.lower() != "нет":
+            return
+        else:
+            raise ValueError("Недопустимое значение")
         
     def found_type(self) -> list:
         '''Проверяет наличие аудио и видео типов в выбранном формате'''
