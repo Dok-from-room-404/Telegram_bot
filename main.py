@@ -3,6 +3,7 @@
 
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import mixins
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from random import choice
 from const import *
@@ -165,7 +166,36 @@ async def wright(message: types.Message, flag:bool=False):
                 
     if User.sheck_stage_4():
         # Выбор бит рейда у аудио дорожки или выбор разрешения видео
-        ...
+        if flag:
+            type = User.file.found_type()[0]
+            if type == "audio":
+                files = User.file.inform_audio()
+                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=1)
+                for i in files:
+                    markup.add(KeyboardButton(i))
+                await message.answer("Выберете файл по следующим параметрам", reply_markup=markup)
+            if type == "vidio":
+                ...
+        else:
+            #try:
+                type = User.file.found_type()[0]
+                if type == "audio":
+                    audio = User.file.dowload_audio(message.text)
+                    #print(type(audio))
+                    print(audio)
+                    #print(message.audio)
+                    await bot.send_document(message.from_user.id, audio)
+                    
+                
+                
+                flag = True
+            # НЕ УДАЛЯТЬ
+            # except TYPE_ERROR:
+            #     await message.answer("Выбран не верный тип. Выберете из предложенных")
+            #except Exception as er:
+            #    '''Недопустимый тип файла'''
+            #    await message.answer(er)
+        
 
 
         
