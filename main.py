@@ -157,11 +157,15 @@ async def wright(message: types.Message, flag:bool=False):
                 User.file.append_type(message.text)
                 flag = True
             # НЕ УДАЛЯТЬ
-            # except FORMAT_ERROR:
-            #     await message.answer("Введен недопустимый тип файла. Выберете из предложенных")
+            # except TYPE_ERROR:
+            #     await message.answer("Выбран не верный тип. Выберете из предложенных")
             except Exception as er:
                 '''Недопустимый тип файла'''
                 await message.answer(er)
+                
+    if User.sheck_stage_4():
+        # Выбор бит рейда у аудио дорожки или выбор разрешения видео
+        ...
 
 
         
