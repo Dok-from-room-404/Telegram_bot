@@ -54,9 +54,11 @@ async def dowload(message: types.Message):
 async def wright(message: types.Message, flag:bool=False):
     '''Необходима для взаимодействия с пользователем'''
     # Класс пользователя. Получаем с БД
+    # id - id пользователя
     id = message.from_user.id
     User = get_iser(cur, id)
     if User == None:
+        # Если юзера нет в системе
         User = USER()
         append_user(con, cur, id, User)
     
@@ -84,11 +86,8 @@ async def wright(message: types.Message, flag:bool=False):
             "До того как пользователь ввел соц сеть"
             # resize_keyboard - адаптация под интерфейс
             markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3) # default - False
-            b1 = KeyboardButton('YouTube')
-            b2 = KeyboardButton('TikTok')
-            b3 = KeyboardButton('VK')
+            b1, b2, b3 = KeyboardButton('YouTube'), KeyboardButton('TikTok'), KeyboardButton('VK')
             markup.add(b1, b2, b3)
-            #markup.add(item1).insert(item2).add(item3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
             
     if User.sheck_stage_1():
@@ -125,8 +124,8 @@ async def wright(message: types.Message, flag:bool=False):
             try:
                 '''После того, как пользователь ввел формат файла'''
                 await message.answer("Вы ввели следующий формат : {0}".format(message.text))
-                if User.file.append_format(message.text):
-                    await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
+                User.file.append_format(message.text)
+                    #await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
                 flag = True
             # НЕ УДАЛЯТЬ
             # except FORMAT_ERROR:
@@ -136,8 +135,11 @@ async def wright(message: types.Message, flag:bool=False):
                 await message.answer(er)
     
     if User.sheck_stage_question_format():
-        '''Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?'''
-        # Пока пусто. Будем использовать при вопросе
+        # Согласны ли вы изменить формат
+        if flag:
+            await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
+        else:
+            User.file.check_question_format()
         
     if User.sheck_stage_3():
         # Если ввод типа файла
