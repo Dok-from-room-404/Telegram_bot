@@ -8,17 +8,22 @@ from pytube import YouTube
 
 class File_YouTube:
     '''Данный класс необходим для взаимодействия с YouTube (выкачка файлов)'''
-    def __init__(self, link:str) -> None:
-        '''Инициализируем класс
-        * link - Ссылка на видео'''
+    def __init__(self) -> None:
+        '''Инициализируем класс'''
         # видео на YouTube (неопределено по формату и качеству)
-        self.yt = YouTube(link)
+        self.yt = None #YouTube(link)
         self.formats = set()
         self.inform = None
+        
+    def append_link(self, link:str) -> None:
+        '''Добавляем ссылку'''
+        self.yt = YouTube(link)
+        
         
     def format(self) -> set:
         '''Определяем формат у видео'''
         if len(self.formats) == 0:
+            # print(self.yt)
             self.formats = set(map(lambda i: i.mime_type.replace(i.type, "")[1:], self.yt.streams))
         return self.formats
     
