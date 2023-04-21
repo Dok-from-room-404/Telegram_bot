@@ -25,21 +25,21 @@ class USER:
         \t* True - текущая стадия 0
         \t* False - текущая стадия 0'''
         print("state 0")
-        return self.file.stage == 0 # not self.file.check_net() and 
+        return self.file.stage == 0
     
     def sheck_stage_1(self) -> bool: 
         '''Проверка на стадию 1 (Ввод ссылки):
         \t* True - текущая стадия 1
         \t* False - текущая стадия 1'''
         print("state 1")
-        return self.file.stage == 1 # self.file.check_net() and self.file.stage == 1
+        return self.file.stage == 1
     
     def sheck_stage_2(self) -> bool: 
         '''Проверка на стадию 2 (Ввод формата файла):
         \t* True - текущая стадия 2
         \t* False - текущая стадия 2'''
         print("state 2")
-        return self.file.stage == 2 # self.file.check_class_net() and self.file.stage == 2
+        return self.file.stage == 2
     
     def sheck_stage_question_format(self) -> bool: 
         '''Проверка на стадию question_format (Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?):
