@@ -16,7 +16,7 @@ class File_YouTube:
         self.formats = set()
         self.inform = None
         self.files = {}
-        self.name = "{name}.{format}"
+        self.name_format = ""
         
     # def append_link(self, link:str) -> None:
     #     '''Добавляем ссылку'''
@@ -41,7 +41,7 @@ class File_YouTube:
             return True
         # Отсекаем не нужные форматы
         self.inform = self.yt.streams.filter(file_extension=format)
-        self.name = self.name.format(format = format, name = "file")
+        self.name_format = format
         return False
     
     def found_vidio(self) -> bool:
@@ -81,7 +81,8 @@ class File_YouTube:
         stream = self.inform.get_by_itag(id)
         byte_io = BytesIO()
         stream.stream_to_buffer(byte_io)
-        byte_io.name = self.name
+        
+        byte_io.name = "{name}.{format}".format(name = stream.title, format = self.name_format)
         byte_io.seek(0)
         return byte_io
         
