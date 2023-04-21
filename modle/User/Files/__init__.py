@@ -18,7 +18,7 @@
 ------
     * File - Класс файла который будет обрабатывать бот. Необходим чтобы бот понимал на каком он этапе обработки файла
 '''
-from modle.YouTube import *
+from .YouTube import *
 from .const import NET
 from .errors import NET_ERROR, LINK_ERROR, FORMAT_ERROR, TYPE_ERROR
 
@@ -38,6 +38,7 @@ class File(object):
            \n\t* 1 -  Ввод ссылки
            \n\t* 2 и более – взаимодействие с классом соц. сети
            '''
+        self.__net = None
         self.__class_net = None # Класс социальной сети (нужен для скачивания)
         self.__stage = 0 # Стадия скачивания файла
     
@@ -50,15 +51,7 @@ class File(object):
     def append_net(self, name_net:str) -> None:
         '''Добавление социальной сети'''
         if name_net in NET:
-            if name_net == "YouTube":
-                self.__class_net = File_YouTube()
-                
-            if name_net == "TikTok":
-                ...
-                
-            if name_net == "VK":
-                ...
-                
+            self.__net = name_net
             self.__stage = 1
         else:
             raise NET_ERROR("Выбрана не верная социальная сеть. Выберете из предложенных")
@@ -66,11 +59,30 @@ class File(object):
     # stage = 1
     def append_link(self, link:str):
         '''Добавление ссылки и класса социальной сети'''
+        # Проверка на правильное начало ссылки
+        if not link.startswith("https://www") and not (self.__net == "VK" and link.startswith("https://")):
+            raise LINK_ERROR("Введена не допустимая ссылка 1")
+        
+        if self.__net == "YouTube" and "youtube.com" not in link:
+            raise LINK_ERROR("Введена не допустимая ссылка 2")
+        
+        elif self.__net == "TikTok" and "tiktok.com" not in link:
+            raise LINK_ERROR("Введена не допустимая ссылка 3")
+        
+        elif self.__net == "VK" and "vk.com" not in link:
+            raise LINK_ERROR("Введена не допустимая ссылка 4")
         try:
-            self.__class_net.append_link(link)
+            if self.__net == "YouTube":
+                self.__class_net = File_YouTube(link)
+                
+            elif self.__net == "TikTok":
+                ...
+                
+            elif self.__net == "VK":
+                ...
             self.__stage = 2
-        except Exception as er:
-            raise LINK_ERROR("Введена не допустимая ссылка: {message}".format(message = er))
+        except:
+            raise LINK_ERROR("Введена не допустимая ссылка 5")
         
     # stage = 2
     def get_format(self) -> set:
@@ -115,6 +127,16 @@ class File(object):
             raise TYPE_ERROR("Выбран не верный тип")
         self.__class_net.set_type(type)
         self.__stage = 4
+        
+    # stage = 4
+    def inform_audio(self) -> dict:
+        '''Получаем инфу о аудио файлах'''
+        self.__class_net.found_audio_file()
+        return self.__class_net.files
+    
+    def dowload_audio(self, inform:str):
+        '''Скачиваем выбранный файл'''
+        return self.__class_net.dowload_audio_file(inform)
 
 
     def reset(self) -> None:
