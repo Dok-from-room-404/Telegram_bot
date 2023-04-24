@@ -190,7 +190,7 @@ async def wright(message: types.Message, flag:bool=False):
                     await bot.send_document(message.from_user.id, dowload_file)
                     flag = True
                     message.text = ""
-                    await wright(message, True)
+                    file.reset()
             # НЕ УДАЛЯТЬ
             # except TYPE_ERROR:
             #     await message.answer("Выбран не верный тип. Выберете из предложенных")
