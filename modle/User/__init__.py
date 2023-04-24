@@ -21,6 +21,10 @@ class USER:
         '''Добавление ссылки и класса социальной сети'''
         self.file.append_link(link)
 
+    def choose_format_youtube(self, form:str):
+        self.file.append_youtube_form(form)
+
+
     def sheck_stage_0(self) -> bool: 
         '''Проверка на стадию 0 (Выбор соц. сети):
         \t* True - текущая стадия 0
@@ -38,8 +42,12 @@ class USER:
         \t* True - текущая стадия 2
         \t* False - текущая стадия 2'''
         return self.file.check_class_net() and self.file.stage == 2
-        
-        
+
+    def check_stage_3(self) -> bool:
+        return self.file.stage == 3
+
+    def download_youtube_file(self, form):
+        self.file.download_youtube_file(form)
     def reset_file(self) -> None:
         '''Сброс настроек класса файла'''
         self.file.reset()
