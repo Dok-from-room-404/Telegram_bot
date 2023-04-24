@@ -1,17 +1,25 @@
+
+
+
+
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import mixins
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from random import choice
 from const import *
-from modle.User import USER
-from modle.User.file import NET_ERROR, LINK_ERROR
+from modle.Files import * # NET_ERROR, LINK_ERROR, FORMAT_ERROR
 from modle.command_bd import *
-import pickle
 import os
+# from modle.User.file import NET_ERROR, LINK_ERROR
 
 
+# Экземпляр бота
 bot = Bot(TOKEN)
+# Диспечер бота. Отсеживает сообщения
 dp = Dispatcher(bot)
+# Подключаемся к БД
 con, cur = connect_bd(BD)
+# maid_bd(con, cur)
 
 
 @dp.message_handler(commands=['help'])
@@ -22,51 +30,52 @@ async def help(message: types.Message):
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    '''Приветствие пользователя'''
+    '''Приветствие пользователя '''
     await message.answer_sticker(open(choice(HELLO_IMAGES), 'rb'))
+    # Пишем  приветствие для пользователя
     await message.answer("{hello} {user}!".format(user = message.from_user.first_name, 
-                                                               hello = choice(HELLO_VARIATIONS)))
+                                                  hello = choice(HELLO_VARIATIONS)))
     # await bot.send_message(message.chat.id, "Я {bot}, могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
     await message.answer("Я Lili, могу скачивать видео и аудио из социальный сетей")
-    await download(message)
+    await dowload(message)
 
 
 @dp.message_handler(commands=['download'])
-async def download(message: types.Message):
+async def dowload(message: types.Message):
     '''Перезапуск функции скачки'''
     message.text = ""
     await wright(message, True)
+
 
 
 @dp.message_handler(content_types=["text"])
 async def wright(message: types.Message, flag:bool=False):
     '''Необходима для взаимодействия с пользователем'''
     # Класс пользователя. Получаем с БД
+    # id - id пользователя
     id = message.from_user.id
-    inform = get_iser(con, cur, id)
-    if inform == None:
-        User = USER()
-        inf = pickle.dumps(User)
-        append_user(con, cur, id, inf)
-    else:
-        User = pickle.loads(inform[0])
+    file = get_iser(cur, id)
+    if file == None:
+        # Если юзера нет в системе
+        file = File()
+        append_user(con, cur, id, file)
     
     if flag:
         "Перезапуск функции скачки"
-        User.reset_file()
-    print(User.file.stage)
+        file.reset()
+        print(file.stage)
     
-    if User.sheck_stage_0():
+    # Флаг первичного запроса данных
+    flag = False
+    
+    if file.stage == 0:
         # Если выбор соц. сети
         if message.text != "":
             "После того как пользователь ввел соц сеть"
             try:
-                User.append_net(message.text)
+                file.append_net(message.text)
                 await message.answer("Вы выбрали: {0}".format(message.text))
-                # Удаляем кнопки
-                hideBoard = ReplyKeyboardRemove()
-                await message.answer("Введите ссылку: ", reply_markup=hideBoard)
-                
+                flag = True
             # НЕ УДАЛЯТЬ
             # except NET_ERROR:
             #     await message.answer("Выбрана не верная социальная сеть. Выберете из предложенных")
@@ -76,74 +85,130 @@ async def wright(message: types.Message, flag:bool=False):
             "До того как пользователь ввел соц сеть"
             # resize_keyboard - адаптация под интерфейс
             markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3) # default - False
-            b1 = KeyboardButton(YOUTUBE)
-            b2 = KeyboardButton('TikTok')
-            b3 = KeyboardButton('VK')
+            b1, b2, b3 = KeyboardButton(YOUTUBE), KeyboardButton('TikTok'), KeyboardButton('VK')
             markup.add(b1, b2, b3)
-            #markup.add(item1).insert(item2).add(item3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
-
-    elif User.sheck_stage_1():
-        '''После того как пользователь ввел ссылку. Соц сеть записана в класс'''
-        # Если  ввод ссылки
-        # https://www.youtube.com/watch?v=M9dvN4S31ts&t=1s
-        # https://vk.com/clips 
-        # https://www.youtube.com/shorts/96LQhbSIFWI
-        try:
-            '''После того, как пользователь ввел ссылку'''
-            User.append_link(message.text)
-            await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
-            # Сохранение изменений в БД (тут из-за рекурсии)
-            uppdete_user(con, cur, id, pickle.dumps(User))
-            if User.file.net == YOUTUBE:
-                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True,
-                                             row_width=3)  # default - False
-                b1 = KeyboardButton('Video')
-                b2 = KeyboardButton('Audio')
-                b3 = KeyboardButton('Video+Audio')
-                markup.add(b1, b2, b3)
-                # markup.add(item1).insert(item2).add(item3)
-                await message.answer('В каком формате будем скачивать:', reply_markup=markup)
             
-        # НЕ УДАЛЯТЬ
-        # except LINK_ERROR:
-        #     await message.answer("Введена не допустимая ссылка")
-        #     await message.answer("Введите ссылку: ")
-        except Exception as er:
-            '''До того, как пользователь ввел ссылку'''
-            await message.answer(er)
-            await message.answer("Введите ссылку: ")
-        
-    elif User.sheck_stage_2():
-        '''После того как пользователь ввел и записал:
-            Соц сеть
-            класс соц. сети'''
-        # Если взаимодействие с классом соц. сети
-        if User.file.net == YOUTUBE:
-            if message.text in YOUTUBE_FORMATS:
-                User.choose_format_youtube(message.text)
-                hideBoard = ReplyKeyboardRemove()
-                User.file.next_stage()
-                await message.answer("Вы выбрали формат: {0}".format(message.text), reply_markup=hideBoard)
-                User.download_youtube_file(message.text)
-                try:
-                    if message.text == 'Video':
-                        with open('reply.mp4', 'rb') as f:
-                            await message.answer_video(f)
-                    elif message.text == 'Audio':
-                        with open('reply.mp4', 'rb') as f:
-                            await message.answer_audio(f)
-                    os.remove('reply.mp4')
-
-                except Exception as e:
-                    await message.answer('Произошла ошибка попробуйте снова')
+    if file.stage == 1:
+        # Если ввод ссылки
+        if flag:
+            # Удаляем кнопки
+            hideBoard = ReplyKeyboardRemove()
+            await message.answer("Введите ссылку: ", reply_markup=hideBoard)
+        else:
+            try:
+                '''После того, как пользователь ввел ссылку'''
+                file.append_link(message.text)
+                await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
+                flag = True
+            # НЕ УДАЛЯТЬ
+            # except LINK_ERROR:
+            #     await message.answer("Введена не допустимая ссылка")
+            #     await message.answer("Введите ссылку: ")
+            except Exception as er:
+                '''Недопустимая ссылка'''
+                await message.answer(er)
+                await message.answer("Введите ссылку: ")
+            
+    if file.stage == 2:
+        # Если ввод формата файла
+        if file.net == "YouTube":
+            if flag:
+                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+                for i in file.class_net.format():
+                    # Добавляем на кнопки форматы
+                    markup.insert(KeyboardButton(i))
+                await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
             else:
-                await message.answer('Выберите корректный формат')
-    elif User.check_stage_3():
-        await message.answer('Для продолжения работы введите команду \t/download')
+                try:
+                    '''После того, как пользователь ввел формат файла'''
+                    await message.answer("Вы ввели следующий формат : {0}".format(message.text))
+                    file.sheck_format(message.text)
+                    flag = True
+                except FORMAT_ERROR:
+                    await message.answer("Введен недопустимый формат файла. Выберете из предложенных")
+                except Exception as er:
+                    '''Недопустимый формат файла'''
+                    await message.answer(er)
+    
+    if file.stage == "question_format":
+        # Согласны ли вы изменить формат
+        if file.net == "YouTube":
+            if flag:
+                await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
+            else:
+                file.check_question_format()
+        
+    if file.stage == 3:
+        # Если ввод типа файла
+        if file.net == "YouTube":
+            if flag:
+                if file.class_net.found_vidio() and file.class_net.found_audio():
+                    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=2)
+                    markup.add(KeyboardButton("Видео")).insert(KeyboardButton("Аудио"))
+                    await message.answer("Выберете необходимый вам тип файла", reply_markup=markup)
+                if file.class_net.found_audio() and not file.class_net.found_vidio():
+                    file.append_type("audio")
+                    flag = True
+                if file.class_net.found_vidio() and not file.class_net.found_audio():
+                    file.append_type("video")
+                    flag = True
+            else:
+                #try:
+                    file.append_type(message.text)
+                    flag = True
+                # НЕ УДАЛЯТЬ
+                # except TYPE_ERROR:
+                #     await message.answer("Выбран не верный тип. Выберете из предложенных")
+                #except Exception as er:
+                #    '''Недопустимый тип файла'''
+                #    await message.answer(er)
+                
+    if file.stage == 4:
+        # Выбор бит рейда у аудио дорожки или выбор разрешения видео
+        if file.net == "YouTube":
+            if flag:
+                if file.class_net.found_audio():
+                    files = file.inform_audio()
+                    
+                if file.class_net.found_vidio():
+                    files = file.inform_vidio()
+
+                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=1)
+                for i in files:
+                    markup.add(KeyboardButton(i))
+                await message.answer("Выберете файл по следующим параметрам", reply_markup=markup)
+            else:
+                #try:
+                    if file.class_net.found_audio():
+                        dowload_file = file.dowload_audio(message.text)
+                    if file.class_net.found_vidio():
+                        dowload_file = file.dowload_audio(message.text)
+                        
+                    await bot.send_document(message.from_user.id, dowload_file)
+                    flag = True
+                    message.text = ""
+                    file.reset()
+            # НЕ УДАЛЯТЬ
+            # except TYPE_ERROR:
+            #     await message.answer("Выбран не верный тип. Выберете из предложенных")
+            #except Exception as er:
+            #    '''Недопустимый тип файла'''
+            #    await message.answer(er)
+        
+
+
+        
+        
+        
     # Сохранение изменений в БД
-    uppdete_user(con, cur, id, pickle.dumps(User))
+    uppdete_user(con, cur, id, file)
 
 
 if __name__ == "__main__":
+    # Старт бота
     executor.start_polling(dp)
+    
+
+
+# t.me/liliindexsbot - ссылка на бота
