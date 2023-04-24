@@ -7,8 +7,8 @@ from aiogram.types import mixins
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from random import choice
 from const import *
-from modle.User import USER # NET_ERROR, LINK_ERROR, FORMAT_ERROR
-from modle.User.command_bd import *
+from modle.Files import * # NET_ERROR, LINK_ERROR, FORMAT_ERROR
+from modle.command_bd import *
 # from modle.User.file import NET_ERROR, LINK_ERROR
 
 
@@ -57,25 +57,25 @@ async def wright(message: types.Message, flag:bool=False):
     # Класс пользователя. Получаем с БД
     # id - id пользователя
     id = message.from_user.id
-    User = get_iser(cur, id)
-    if User == None:
+    file = get_iser(cur, id)
+    if file == None:
         # Если юзера нет в системе
-        User = USER()
-        append_user(con, cur, id, User)
+        file = File()
+        append_user(con, cur, id, file)
     
     if flag:
         "Перезапуск функции скачки"
-        User.file.reset()
+        file.reset()
     
     # Флаг первичного запроса данных
     flag = False
     
-    if User.sheck_stage_0():
+    if file.stage == 0:
         # Если выбор соц. сети
         if message.text != "":
             "После того как пользователь ввел соц сеть"
             try:
-                User.file.append_net(message.text)
+                file.append_net(message.text)
                 await message.answer("Вы выбрали: {0}".format(message.text))
                 flag = True
             # НЕ УДАЛЯТЬ
@@ -91,7 +91,7 @@ async def wright(message: types.Message, flag:bool=False):
             markup.add(b1, b2, b3)
             await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
             
-    if User.sheck_stage_1():
+    if file.stage == 1:
         # Если ввод ссылки
         if flag:
             # Удаляем кнопки
@@ -100,7 +100,7 @@ async def wright(message: types.Message, flag:bool=False):
         else:
             try:
                 '''После того, как пользователь ввел ссылку'''
-                User.file.append_link(message.text)
+                file.append_link(message.text)
                 await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
                 flag = True
             # НЕ УДАЛЯТЬ
@@ -112,83 +112,85 @@ async def wright(message: types.Message, flag:bool=False):
                 await message.answer(er)
                 await message.answer("Введите ссылку: ")
             
-    if User.sheck_stage_2():
+    if file.stage == 2:
         # Если ввод формата файла
-        if flag:
-            markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
-            for i in User.file.get_format():
-                # Добавляем на кнопки форматы
-                markup.insert(KeyboardButton(i))
-            await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
-            
-        else:
-            try:
-                '''После того, как пользователь ввел формат файла'''
-                await message.answer("Вы ввели следующий формат : {0}".format(message.text))
-                User.file.append_format(message.text)
-                    #await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
-                flag = True
-            # НЕ УДАЛЯТЬ
-            # except FORMAT_ERROR:
-            #     await message.answer("Введен недопустимый формат файла. Выберете из предложенных")
-            except Exception as er:
-                '''Недопустимый формат файла'''
-                await message.answer(er)
+        if file.net == "YouTube":
+            if flag:
+                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+                for i in file.class_net.format():
+                    # Добавляем на кнопки форматы
+                    markup.insert(KeyboardButton(i))
+                await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
+            else:
+                try:
+                    '''После того, как пользователь ввел формат файла'''
+                    await message.answer("Вы ввели следующий формат : {0}".format(message.text))
+                    file.sheck_format(message.text)
+                    flag = True
+                except FORMAT_ERROR:
+                    await message.answer("Введен недопустимый формат файла. Выберете из предложенных")
+                except Exception as er:
+                    '''Недопустимый формат файла'''
+                    await message.answer(er)
     
-    if User.sheck_stage_question_format():
+    if file.stage == "question_format":
         # Согласны ли вы изменить формат
-        if flag:
-            await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
-        else:
-            User.file.check_question_format()
+        if file.net == "YouTube":
+            if flag:
+                await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
+            else:
+                file.check_question_format()
         
-    if User.sheck_stage_3():
+    if file.stage == 3:
         # Если ввод типа файла
-        if flag:
-            types = User.file.found_type()
-            if len(types) == 2:
-                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=2)
-                markup.add(KeyboardButton("Видео")).insert(KeyboardButton("Аудио"))
-                await message.answer("Выберете необходимый вам тип файла", reply_markup=markup)
-            if len(types) == 1:
-                User.file.append_type(*types)
-                flag = True
-        else:
-            try:
-                User.file.append_type(message.text)
-                flag = True
-            # НЕ УДАЛЯТЬ
-            # except TYPE_ERROR:
-            #     await message.answer("Выбран не верный тип. Выберете из предложенных")
-            except Exception as er:
-                '''Недопустимый тип файла'''
-                await message.answer(er)
+        if file.net == "YouTube":
+            if flag:
+                if file.class_net.found_vidio() and file.class_net.found_audio():
+                    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=2)
+                    markup.add(KeyboardButton("Видео")).insert(KeyboardButton("Аудио"))
+                    await message.answer("Выберете необходимый вам тип файла", reply_markup=markup)
+                if file.class_net.found_audio() and not file.class_net.found_vidio():
+                    file.append_type("audio")
+                    flag = True
+                if file.class_net.found_vidio() and not file.class_net.found_audio():
+                    file.append_type("video")
+                    flag = True
+            else:
+                #try:
+                    file.append_type(message.text)
+                    flag = True
+                # НЕ УДАЛЯТЬ
+                # except TYPE_ERROR:
+                #     await message.answer("Выбран не верный тип. Выберете из предложенных")
+                #except Exception as er:
+                #    '''Недопустимый тип файла'''
+                #    await message.answer(er)
                 
-    if User.sheck_stage_4():
+    if file.stage == 4:
         # Выбор бит рейда у аудио дорожки или выбор разрешения видео
-        if flag:
-            type = User.file.found_type()[0]
-            if type == "audio":
-                files = User.file.inform_audio()
+        if file.net == "YouTube":
+            if flag:
+                if file.class_net.found_audio():
+                    files = file.inform_audio()
+                    
+                if file.class_net.found_vidio():
+                    files = file.inform_vidio()
+
                 markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=1)
                 for i in files:
                     markup.add(KeyboardButton(i))
                 await message.answer("Выберете файл по следующим параметрам", reply_markup=markup)
-            if type == "vidio":
-                ...
-        else:
-            #try:
-                type = User.file.found_type()[0]
-                if type == "audio":
-                    audio = User.file.dowload_audio(message.text)
-                    #print(type(audio))
-                    print(audio)
-                    #print(message.audio)
-                    await bot.send_document(message.from_user.id, audio)
-                    
-                
-                
-                flag = True
+            else:
+                #try:
+                    if file.class_net.found_audio():
+                        dowload_file = file.dowload_audio(message.text)
+                    if file.class_net.found_vidio():
+                        dowload_file = file.dowload_audio(message.text)
+                        
+                    await bot.send_document(message.from_user.id, dowload_file)
+                    flag = True
+                    message.text = ""
+                    await wright(message, True)
             # НЕ УДАЛЯТЬ
             # except TYPE_ERROR:
             #     await message.answer("Выбран не верный тип. Выберете из предложенных")
@@ -202,7 +204,7 @@ async def wright(message: types.Message, flag:bool=False):
         
         
     # Сохранение изменений в БД
-    uppdete_user(con, cur, id, User)
+    uppdete_user(con, cur, id, file)
 
 
 if __name__ == "__main__":
