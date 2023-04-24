@@ -1,6 +1,19 @@
+
+
+
+
+'''
+Данный модуль содержит константы для работы бота
+
+Константы:
+---------
+    * TOKEN - Токен бота от BotFather
+    * TEXT_FOR_HELP - Список доступных команд
+'''
+
+
 TOKEN = "6218093072:AAHR9dUmAo24AcMOmWIl-QIGe3Ln2btGQuA" # Токен бота от BotFather
 #t.me/liliindexsbot - ссылка
-
 TEXT_FOR_HELP = '''
 Список доступных команд:
 \t/help - список доступных команд
@@ -14,4 +27,3 @@ SOCIALS = ["YouTube", "TikTok", "VK"]
 BD = "db\\user.db"
 YOUTUBE = 'YouTube'
 YOUTUBE_FORMATS = ['Video', 'Audio', 'Video+Audio']
-
