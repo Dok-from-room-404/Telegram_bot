@@ -1,7 +1,3 @@
-
-
-
-
 '''
 Данный модуль содержит константы для работы бота
 
@@ -26,4 +22,3 @@ HELLO_VARIATIONS = ["Добро пожаловать,", "Привет,", "При
 SOCIALS = ["YouTube", "TikTok", "VK"]
 BD = "db\\user.db"
 YOUTUBE = 'YouTube'
-YOUTUBE_FORMATS = ['Video', 'Audio', 'Video+Audio']

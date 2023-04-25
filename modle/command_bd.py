@@ -1,7 +1,3 @@
-
-
-
-
 '''
 В данном файле находятся команды для базы данных
 
@@ -49,32 +45,32 @@ def maid_bd(con:Connection, cur:Cursor):
     con.commit()
 
 
-def get_iser(cur:Cursor, id:int):
+def get_user(cur: Cursor, id: int):
     '''Возвращает пользователя из БД или None (в случае отсутствия)
        \n* con - подключение к БД
        \n* cur - курсор БД
        \n* id - id пользователя'''
     res = cur.execute("""select user from users
-                            where user_id = {id}""".format(id = id)).fetchone()
+                            where user_id = {id}""".format(id=id)).fetchone()
     # con.commit()
-    if res == None:
+    if res is None:
         return res
     else:
         return pickle.loads(res[0])
 
 
-def get_histori(cur:Cursor, id:int):
+def get_history(cur: Cursor, id: int):
     '''Возвращает историю по пользователю
        \n* con - подключение к БД
        \n* cur - курсор БД'''
     res = cur.execute('''select history from history
                             where id = (select id from users
-                                            where user_id = {id})'''.format(id = id)).fetchone()
+                                            where user_id = {id})'''.format(id=id)).fetchone()
     # con.commit()
     return res
 
 
-def append_user(con:Connection, cur:Cursor, id:int, user):
+def append_user(con: Connection, cur: Cursor, id: int, user):
     '''Добавляем пользователя
        \n* con - подключение к БД
        \n* cur - курсор БД
@@ -84,7 +80,7 @@ def append_user(con:Connection, cur:Cursor, id:int, user):
     con.commit()
 
 
-def uppdete_user(con:Connection, cur:Cursor, id:int, user):
+def update_user(con: Connection, cur: Cursor, id: int, user):
     '''Обновляет информацию о пользователе
        \n* con - подключение к БД
        \n* cur - курсор БД
