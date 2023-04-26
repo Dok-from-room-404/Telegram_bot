@@ -13,6 +13,9 @@ class File_YouTube:
         self.files = {}
         self.name_format = ""
 
+    def get_info(self):
+        return self.yt.author, self.yt.title, self.yt.views, self.yt.publish_date
+
     def format(self) -> set:
         """Определяем формат у видео"""
         if len(self.formats) == 0:

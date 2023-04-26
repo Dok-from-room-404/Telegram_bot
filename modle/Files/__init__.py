@@ -15,6 +15,7 @@
     * File - Класс файла который будет обрабатывать бот. Необходим чтобы бот понимал на каком он этапе обработки файла
 """
 from .YouTube import *
+from .TikTok import *
 from .const import NET
 from .errors import NET_ERROR, LINK_ERROR, FORMAT_ERROR, TYPE_ERROR
 
@@ -80,7 +81,7 @@ class File(object):
                 self.__class_net = File_YouTube(link)
 
             elif self.__net == "TikTok":
-                ...
+                self.__class_net = TikTokFile(link)
 
             elif self.__net == "VK":
                 ...
@@ -147,6 +148,21 @@ class File(object):
         """Выводим инфу о доступных разрешений видео"""
         self.__class_net.found_video_file()
         return self.__class_net.files
+
+    def get_youtube_info(self):
+        return self.__class_net.get_info()
+
+    def get_tiktok_info(self):
+        return self.__class_net.get_info()
+
+    def get_tiktok_request(self):
+        self.__class_net.get_request()
+
+    def get_tiktok_video(self):
+        return self.__class_net.get_video()
+
+    def get_tiktok_audio(self):
+        return self.__class_net.get_audio()
 
     def reset(self) -> None:
         """Сброс настроек класса"""

@@ -3,6 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 from random import choice
 from const import *
 from modle.Files import *  # NET_ERROR, LINK_ERROR, FORMAT_ERROR
+from modle.Files.TikTok import *
 from modle.command_bd import *
 
 
@@ -89,7 +90,18 @@ async def wright(message: types.Message, flag: bool = False):
             try:
                 '''После того, как пользователь ввел ссылку'''
                 file.append_link(message.text)
-                await message.answer("Вы ввели следующею ссылку: {0}".format(message.text))
+                if file.net == YOUTUBE:
+                    try:
+                        inf = file.get_youtube_info()
+                        await message.answer(f'Ваша ссылка: {message.text}\n'
+                                            f'Параметры:\n'
+                                            f'Автор: {inf[0]}\n'
+                                            f'Название: {inf[1]}\n'
+                                            f'Просмотры: {inf[2]}\n'
+                                            f'Дата: {inf[3]}', disable_web_page_preview=True)
+                    except Exception as e:
+                        await message.answer('Произошла ошибка, введите ссылку еще раз')
+                        file.stage = 1
                 flag = True
             # НЕ УДАЛЯТЬ
             # except LINK_ERROR:
@@ -104,6 +116,7 @@ async def wright(message: types.Message, flag: bool = False):
         # Если ввод формата файла
         if file.net == YOUTUBE:
             if flag:
+
                 markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
                 for i in file.class_net.format():
                     # Добавляем на кнопки форматы
@@ -120,7 +133,22 @@ async def wright(message: types.Message, flag: bool = False):
                 except Exception as er:
                     '''Недопустимый формат файла'''
                     await message.answer(er)
-    
+        elif file.net == 'TikTok':
+            if flag:
+                try:
+                    file.get_tiktok_request()
+                    inf = file.get_tiktok_info()
+                    await message.answer(f'Ваша ссылка: {message.text}\n'
+                                         f'Параметры:\n'
+                                         f'Автор: {inf[2]}\n'
+                                         f'Название: {inf[0]}\n'
+                                         f'Длительность: {inf[1]}\n', disable_web_page_preview=True)
+                    await message.answer_video(file.get_tiktok_video(), caption='Полное видео без водяного знака')
+                    await message.answer_audio(file.get_tiktok_audio(), caption='Отдельная аудио дорожка')
+                    file.reset()
+                except Exception as e:
+                    await message.answer('Произошла ошибка')
+
     if file.stage == "question_format":
         # Согласны ли вы изменить формат
         if file.net == YOUTUBE:
