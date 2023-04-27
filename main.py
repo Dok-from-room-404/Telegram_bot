@@ -3,15 +3,12 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 from random import choice
 from const import *
 from modle.Files import *  # NET_ERROR, LINK_ERROR, FORMAT_ERROR
-from modle.Files.TikTok import *
 from modle.command_bd import *
 
 
 bot = Bot(TOKEN)
 dp = Dispatcher(bot)
-# Подключаемся к БД
 con, cur = connect_bd(BD)
-# maid_bd(con, cur)
 
 
 @dp.message_handler(commands=['help'])
