@@ -1,13 +1,9 @@
-"""
-Данный модуль содержит константы для работы бота
+import os
+from dotenv import load_dotenv, find_dotenv
 
-Константы:
----------
-    * TOKEN - Токен бота от BotFather
-    * TEXT_FOR_HELP - Список доступных команд
-"""
+load_dotenv(find_dotenv())
 
-TOKEN = "6218093072:AAHR9dUmAo24AcMOmWIl-QIGe3Ln2btGQuA"  # Токен бота от BotFather
+TOKEN = os.environ['TOKEN']  # Токен бота от BotFather
 # t.me/liliindexsbot - ссылка
 TEXT_FOR_HELP = '''
 Список доступных команд:
@@ -23,7 +19,7 @@ BD = "db\\user.db"
 YOUTUBE = 'YouTube'
 HEADERS = {
     "content-type": "application/octet-stream",
-    "X-RapidAPI-Key": "f5624db1d4msh20fca6f65d29e20p1cfb25jsn4ade0d2c525a",
+    "X-RapidAPI-Key": os.environ['RAPIDAPI_KEY'],
     "X-RapidAPI-Host": "tiktok-video-no-watermark2.p.rapidapi.com"
 }
 URL = "https://tiktok-video-no-watermark2.p.rapidapi.com/"
