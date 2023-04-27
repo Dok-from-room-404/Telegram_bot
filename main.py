@@ -26,7 +26,7 @@ async def start(message: types.Message):
                                                   hello=choice(HELLO_VARIATIONS)))
     # await bot.send_message(message.chat.id, "Я {bot},
     # могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
-    await message.answer("Я Lili, могу скачивать видео и аудио из социальный сетей")
+    await message.answer("Я Lili, умею скачивать видео с ютуба и тиктока")
     await download(message)
 
 
@@ -72,10 +72,10 @@ async def wright(message: types.Message, flag: bool = False):
         else:
             "До того как пользователь ввел соц сеть"
             # resize_keyboard - адаптация под интерфейс
-            markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)  # default - False
-            b1, b2, b3 = KeyboardButton(YOUTUBE), KeyboardButton('TikTok'), KeyboardButton('VK')
-            markup.add(b1, b2, b3)
-            await message.answer("Из какой социальной сети будем что-либо скачивать:", reply_markup=markup)
+            markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=2)
+            b1, b2 = KeyboardButton(YOUTUBE), KeyboardButton(TIKTOK)
+            markup.add(b1, b2)
+            await message.answer("Откуда будем скачивать:", reply_markup=markup)
             
     if file.stage == 1:
         # Если ввод ссылки
@@ -89,16 +89,12 @@ async def wright(message: types.Message, flag: bool = False):
                 file.append_link(message.text)
                 if file.net == YOUTUBE:
                     try:
-                        inf = file.get_youtube_info()
-                        await message.answer(f'Ваша ссылка: {message.text}\n'
-                                            f'Параметры:\n'
-                                            f'Автор: {inf[0]}\n'
-                                            f'Название: {inf[1]}\n'
-                                            f'Просмотры: {inf[2]}\n'
-                                            f'Дата: {inf[3]}', disable_web_page_preview=True)
+                        ans = file.get_youtube_info(message.text)
+                        await message.answer(ans, disable_web_page_preview=True)
                     except Exception as e:
+                        print(e)
                         await message.answer('Произошла ошибка, введите ссылку еще раз')
-                        file.stage = 1
+                        file.stage_setter(1)
                 flag = True
             # НЕ УДАЛЯТЬ
             # except LINK_ERROR:
@@ -113,12 +109,17 @@ async def wright(message: types.Message, flag: bool = False):
         # Если ввод формата файла
         if file.net == YOUTUBE:
             if flag:
+                try:
 
-                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
-                for i in file.class_net.format():
-                    # Добавляем на кнопки форматы
-                    markup.insert(KeyboardButton(i))
-                await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
+                    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+                    for i in file.class_net.format():
+                        # Добавляем на кнопки форматы
+                        markup.insert(KeyboardButton(i))
+                    await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
+                except Exception as e:
+                    await message.answer('Произошла неизвестная ошибка, вам придется начать сначала')
+                    file.reset()
+                    await message.answer('Введите команду \t/download')
             else:
                 try:
                     '''После того, как пользователь ввел формат файла'''
@@ -130,16 +131,12 @@ async def wright(message: types.Message, flag: bool = False):
                 except Exception as er:
                     '''Недопустимый формат файла'''
                     await message.answer(er)
-        elif file.net == 'TikTok':
+        elif file.net == TIKTOK:
             if flag:
                 try:
                     file.get_tiktok_request()
-                    inf = file.get_tiktok_info()
-                    await message.answer(f'Ваша ссылка: {message.text}\n'
-                                         f'Параметры:\n'
-                                         f'Автор: {inf[2]}\n'
-                                         f'Название: {inf[0]}\n'
-                                         f'Длительность: {inf[1]}\n', disable_web_page_preview=True)
+                    ans = file.get_tiktok_info(message.text)
+                    await message.answer(ans, disable_web_page_preview=True)
                     await message.answer_video(file.get_tiktok_video(), caption='Полное видео без водяного знака')
                     await message.answer_audio(file.get_tiktok_audio(), caption='Отдельная аудио дорожка')
                     file.reset()

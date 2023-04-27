@@ -14,7 +14,7 @@ class File_YouTube:
         self.name_format = ""
 
     def get_info(self):
-        return self.yt.author, self.yt.title, self.yt.views, self.yt.publish_date
+        return self.yt.author, self.yt.views, self.yt.publish_date
 
     def format(self) -> set:
         """Определяем формат у видео"""

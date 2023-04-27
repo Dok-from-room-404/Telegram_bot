@@ -149,11 +149,18 @@ class File(object):
         self.__class_net.found_video_file()
         return self.__class_net.files
 
-    def get_youtube_info(self):
-        return self.__class_net.get_info()
+    def get_youtube_info(self, message):
+        st = f'Ваша ссылка: {message}\n'
+        return st
 
-    def get_tiktok_info(self):
-        return self.__class_net.get_info()
+    def get_tiktok_info(self, message):
+        inf = self.__class_net.get_info()
+        st = f'Ваша ссылка: {message.text}\n'\
+            f'Параметры:\n'\
+            f'Автор: {inf[2]}\n'\
+            f'Название: {inf[0]}\n'\
+            f'Длительность: {inf[1]}\n'
+        return st
 
     def get_tiktok_request(self):
         self.__class_net.get_request()
@@ -169,3 +176,6 @@ class File(object):
         self.__net = None
         self.__class_net = None
         self.__stage = 0
+
+    def stage_setter(self, value):
+        self.__stage = value

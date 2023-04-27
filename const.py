@@ -14,9 +14,10 @@ TEXT_FOR_HELP = '''
 
 HELLO_IMAGES = ["static//img/lili_hello.png", "static//img/lili.png"]
 HELLO_VARIATIONS = ["Добро пожаловать,", "Привет,", "Привет, пользователь"]
-SOCIALS = ["YouTube", "TikTok", "VK"]
+SOCIALS = ["YouTube", "TikTok"]
 BD = "db\\user.db"
 YOUTUBE = 'YouTube'
+TIKTOK = 'TikTok'
 HEADERS = {
     "content-type": "application/octet-stream",
     "X-RapidAPI-Key": os.environ['RAPIDAPI_KEY'],
