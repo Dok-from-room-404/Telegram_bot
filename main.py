@@ -99,9 +99,9 @@ async def wright(message: types.Message, flag: bool = False):
                         file.stage_setter(1)
                 flag = True
             # НЕ УДАЛЯТЬ
-            #except LINK_ERROR:
-            #    await message.answer("Введена не допустимая ссылка")
-            #    await message.answer("Введите ссылку: ")
+            except LINK_ERROR:
+                await message.answer("Введена не допустимая ссылка")
+                await message.answer("Введите ссылку: ")
             except Exception as er:
                 '''Недопустимая ссылка'''
                 await message.answer(er)
@@ -193,11 +193,9 @@ async def wright(message: types.Message, flag: bool = False):
         if file.net == YOUTUBE:
             if flag:
                 if file.class_net.found_video():
-                    print("video")
                     files = file.inform_video()
                     
                 elif file.class_net.found_audio():
-                    print("audio")
                     files = file.inform_audio()
 
                 markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=1)
@@ -205,7 +203,7 @@ async def wright(message: types.Message, flag: bool = False):
                     markup.add(KeyboardButton(i))
                 await message.answer("Выберете файл по следующим параметрам", reply_markup=markup)
             else:
-                #try:
+                try:
                     await message.answer("Загрузка файла. Ожидайте")
                     if file.class_net.found_video():
                         print("found_video")
@@ -221,11 +219,11 @@ async def wright(message: types.Message, flag: bool = False):
                     message.text = ""
                     file.reset()
                 # НЕ УДАЛЯТЬ
-                #except TYPE_ERROR:
-                #    await message.answer("Выбран не верный тип. Выберете из предложенных")
-                #except Exception as er:
+                except TYPE_ERROR:
+                    await message.answer("Выбран не верный тип. Выберете из предложенных")
+                except Exception as er:
                     '''Недопустимый тип файла'''
-                 #   await message.answer(er)
+                    await message.answer(er)
     # Сохранение изменений в БД
     update_user(con, cur, id, file)
 
