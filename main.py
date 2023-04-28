@@ -9,6 +9,8 @@ from modle.command_bd import *
 bot = Bot(TOKEN)
 dp = Dispatcher(bot)
 con, cur = connect_bd(BD)
+# maid_bd(con, cur)
+
 
 
 @dp.message_handler(commands=['help'])
@@ -97,9 +99,9 @@ async def wright(message: types.Message, flag: bool = False):
                         file.stage_setter(1)
                 flag = True
             # НЕ УДАЛЯТЬ
-            except LINK_ERROR:
-                await message.answer("Введена не допустимая ссылка")
-                await message.answer("Введите ссылку: ")
+            #except LINK_ERROR:
+            #    await message.answer("Введена не допустимая ссылка")
+            #    await message.answer("Введите ссылку: ")
             except Exception as er:
                 '''Недопустимая ссылка'''
                 await message.answer(er)
@@ -110,7 +112,6 @@ async def wright(message: types.Message, flag: bool = False):
         if file.net == YOUTUBE:
             if flag:
                 try:
-
                     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
                     for i in file.class_net.format():
                         # Добавляем на кнопки форматы
@@ -147,10 +148,21 @@ async def wright(message: types.Message, flag: bool = False):
         # Согласны ли вы изменить формат
         if file.net == YOUTUBE:
             if flag:
-                await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (да/нет)?")
+                markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+                markup.insert(KeyboardButton("Да"))
+                markup.insert(KeyboardButton("Нет"))
+                await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (Да/Нет)?", reply_markup=markup)
             else:
                 file.check_question_format(message.text)
-        
+                flag = True
+                if file.stage == 2:
+                    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+                    for i in file.class_net.format():
+                        # Добавляем на кнопки форматы
+                        markup.insert(KeyboardButton(i))
+                    await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
+                    
+                    
     if file.stage == 3:
         # Если ввод типа файла
         if file.net == YOUTUBE:
@@ -180,33 +192,40 @@ async def wright(message: types.Message, flag: bool = False):
         # Выбор бит рейда у аудио дорожки или выбор разрешения видео
         if file.net == YOUTUBE:
             if flag:
-                if file.class_net.found_audio():
-                    files = file.inform_audio()
-                    
                 if file.class_net.found_video():
+                    print("video")
                     files = file.inform_video()
+                    
+                elif file.class_net.found_audio():
+                    print("audio")
+                    files = file.inform_audio()
 
                 markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=1)
                 for i in files:
                     markup.add(KeyboardButton(i))
                 await message.answer("Выберете файл по следующим параметрам", reply_markup=markup)
             else:
-                try:
-                    if file.class_net.found_audio():
-                        download_file = file.download_audio(message.text)
+                #try:
+                    await message.answer("Загрузка файла. Ожидайте")
                     if file.class_net.found_video():
+                        print("found_video")
+                        download_file = file.download_audio(message.text)
+                    elif file.class_net.found_audio():
+                        print("found_audio")
                         download_file = file.download_audio(message.text)
 
+
                     await bot.send_document(message.from_user.id, download_file)
+                    await message.answer("Загрузка файла закончена")
                     flag = True
                     message.text = ""
                     file.reset()
                 # НЕ УДАЛЯТЬ
-                except TYPE_ERROR:
-                    await message.answer("Выбран не верный тип. Выберете из предложенных")
-                except Exception as er:
+                #except TYPE_ERROR:
+                #    await message.answer("Выбран не верный тип. Выберете из предложенных")
+                #except Exception as er:
                     '''Недопустимый тип файла'''
-                    await message.answer(er)
+                 #   await message.answer(er)
     # Сохранение изменений в БД
     update_user(con, cur, id, file)
 
