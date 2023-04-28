@@ -97,9 +97,9 @@ async def wright(message: types.Message, flag: bool = False):
                         file.stage_setter(1)
                 flag = True
             # НЕ УДАЛЯТЬ
-            # except LINK_ERROR:
-            #     await message.answer("Введена не допустимая ссылка")
-            #     await message.answer("Введите ссылку: ")
+            except LINK_ERROR:
+                await message.answer("Введена не допустимая ссылка")
+                await message.answer("Введите ссылку: ")
             except Exception as er:
                 '''Недопустимая ссылка'''
                 await message.answer(er)
@@ -166,15 +166,15 @@ async def wright(message: types.Message, flag: bool = False):
                     file.append_type("video")
                     flag = True
             else:
-                #try:
-                file.append_type(message.text)
-                flag = True
+                try:
+                    file.append_type(message.text)
+                    flag = True
                 # НЕ УДАЛЯТЬ
-                # except TYPE_ERROR:
-                #     await message.answer("Выбран не верный тип. Выберете из предложенных")
-                #except Exception as er:
-                #    '''Недопустимый тип файла'''
-                #    await message.answer(er)
+                except TYPE_ERROR:
+                    await message.answer("Выбран не верный тип. Выберете из предложенных")
+                except Exception as er:
+                    '''Недопустимый тип файла'''
+                    await message.answer(er)
                 
     if file.stage == 4:
         # Выбор бит рейда у аудио дорожки или выбор разрешения видео
@@ -191,22 +191,22 @@ async def wright(message: types.Message, flag: bool = False):
                     markup.add(KeyboardButton(i))
                 await message.answer("Выберете файл по следующим параметрам", reply_markup=markup)
             else:
-                #try:
-                if file.class_net.found_audio():
-                    download_file = file.download_audio(message.text)
-                if file.class_net.found_video():
-                    download_file = file.download_audio(message.text)
-                        
-                await bot.send_document(message.from_user.id, download_file)
-                flag = True
-                message.text = ""
-                file.reset()
-            # НЕ УДАЛЯТЬ
-            # except TYPE_ERROR:
-            #     await message.answer("Выбран не верный тип. Выберете из предложенных")
-            #except Exception as er:
-            #    '''Недопустимый тип файла'''
-            #    await message.answer(er)
+                try:
+                    if file.class_net.found_audio():
+                        download_file = file.download_audio(message.text)
+                    if file.class_net.found_video():
+                        download_file = file.download_audio(message.text)
+
+                    await bot.send_document(message.from_user.id, download_file)
+                    flag = True
+                    message.text = ""
+                    file.reset()
+                # НЕ УДАЛЯТЬ
+                except TYPE_ERROR:
+                    await message.answer("Выбран не верный тип. Выберете из предложенных")
+                except Exception as er:
+                    '''Недопустимый тип файла'''
+                    await message.answer(er)
     # Сохранение изменений в БД
     update_user(con, cur, id, file)
 
