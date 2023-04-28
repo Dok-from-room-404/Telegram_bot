@@ -149,7 +149,7 @@ class File(object):
 
     def get_tiktok_info(self, message):
         inf = self.__class_net.get_info()
-        st = f'Ваша ссылка: {message.text}\n'\
+        st = f'Ваша ссылка: {message}\n'\
             f'Параметры:\n'\
             f'Автор: {inf[2]}\n'\
             f'Название: {inf[0]}\n'\
