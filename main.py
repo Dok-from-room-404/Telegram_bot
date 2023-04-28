@@ -134,15 +134,15 @@ async def wright(message: types.Message, flag: bool = False):
                     await message.answer(er)
         elif file.net == TIKTOK:
             if flag:
-                try:
+                #try:
                     file.get_tiktok_request()
                     ans = file.get_tiktok_info(message.text)
                     await message.answer(ans, disable_web_page_preview=True)
                     await message.answer_video(file.get_tiktok_video(), caption='Полное видео без водяного знака')
                     await message.answer_audio(file.get_tiktok_audio(), caption='Отдельная аудио дорожка')
                     file.reset()
-                except Exception as e:
-                    await message.answer('Произошла ошибка')
+                #except Exception as e:
+                #    await message.answer('Произошла ошибка')
 
     if file.stage == "question_format":
         # Согласны ли вы изменить формат
