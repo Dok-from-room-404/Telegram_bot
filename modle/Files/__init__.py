@@ -65,7 +65,7 @@ class File(object):
     def append_link(self, link: str):
         """Добавление ссылки и класса социальной сети"""
         # Проверка на правильное начало ссылки
-        if not link.startswith("https://www") and not (self.__net == "VK" and link.startswith("https://")):
+        if not link.startswith("https://www"):
             raise LINK_ERROR("Введена не допустимая ссылка 1")
 
         if self.__net == "YouTube" and "youtube.com" not in link:
@@ -73,21 +73,16 @@ class File(object):
 
         elif self.__net == "TikTok" and "tiktok.com" not in link:
             raise LINK_ERROR("Введена не допустимая ссылка 3")
+        #try:
+        if self.__net == "YouTube":
+            self.__class_net = File_YouTube(link)
 
-        elif self.__net == "VK" and "vk.com" not in link:
-            raise LINK_ERROR("Введена не допустимая ссылка 4")
-        try:
-            if self.__net == "YouTube":
-                self.__class_net = File_YouTube(link)
+        elif self.__net == "TikTok":
+            self.__class_net = TikTokFile(link)
 
-            elif self.__net == "TikTok":
-                self.__class_net = TikTokFile(link)
-
-            elif self.__net == "VK":
-                ...
-            self.__stage = 2
-        except:
-            raise LINK_ERROR("Введена не допустимая ссылка 5")
+        self.__stage = 2
+        #except:
+        #    raise LINK_ERROR("Введена не допустимая ссылка 5")
 
     # stage = 2
     def check_format(self, format: str):
@@ -104,10 +99,10 @@ class File(object):
     def check_question_format(self, answer: str):
         """Проверка ответа"""
         if self.__net == "YouTube":
-            if answer.lower() != "да":
+            if answer.lower() == "да":
                 self.__stage = 2
-            elif answer.lower() != "нет":
-                return
+            elif answer.lower() == "нет":
+                self.__stage = 3
             else:
                 raise ValueError("Недопустимое значение")
 
@@ -130,7 +125,6 @@ class File(object):
 
             if type not in self.found_type():
                 raise TYPE_ERROR("Выбран не верный тип")
-            print(type)
             self.__class_net.set_type(type)
             self.__stage = 4
 
