@@ -12,10 +12,10 @@ TEXT_FOR_HELP = '''
 \t/download – команда для скачивания видео из социальных сетей (сбрасывает прошлые настройки для скачки видеороликов)
 '''
 
-HELLO_IMAGES = ["static//img/lili_hello.png", "static//img/lili.png"]
+HELLO_IMAGES = ["data//static//img/lili_hello.png", "data//static//img/lili.png"]
 HELLO_VARIATIONS = ["Добро пожаловать,", "Привет,", "Привет, пользователь"]
 SOCIALS = ["YouTube", "TikTok"]
-BD = "db\\user.db"
+BD = "data\\db\\user.db"
 YOUTUBE = 'YouTube'
 TIKTOK = 'TikTok'
 HEADERS = {

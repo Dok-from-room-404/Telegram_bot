@@ -20,4 +20,3 @@ class TikTokFile:
 
 	def get_info(self):
 		return self.response['data']['title'], self.response['data']['duration'], self.response['data']['author']['nickname']
-

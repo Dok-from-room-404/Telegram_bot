@@ -73,7 +73,7 @@ class File(object):
 
         elif self.__net == "TikTok" and "tiktok.com" not in link:
             raise LINK_ERROR("Введена не допустимая ссылка 3")
-        #try:
+        # try:
         if self.__net == "YouTube":
             self.__class_net = File_YouTube(link)
 
@@ -81,7 +81,7 @@ class File(object):
             self.__class_net = TikTokFile(link)
 
         self.__stage = 2
-        #except:
+        # except:
         #    raise LINK_ERROR("Введена не допустимая ссылка 5")
 
     # stage = 2
@@ -120,8 +120,10 @@ class File(object):
     def append_type(self, type: str) -> None:
         """Устанавливает тип type скачиваемому файлу"""
         if self.__net == "YouTube":
-            if type == "Видео": type = "video"
-            if type == "Аудио": type = "audio"
+            if type == "Видео":
+                type = "video"
+            if type == "Аудио":
+                type = "audio"
 
             if type not in self.found_type():
                 raise TYPE_ERROR("Выбран не верный тип")
@@ -149,11 +151,11 @@ class File(object):
 
     def get_tiktok_info(self, message):
         inf = self.__class_net.get_info()
-        st = f'Ваша ссылка: {message}\n'\
-            f'Параметры:\n'\
-            f'Автор: {inf[2]}\n'\
-            f'Название: {inf[0]}\n'\
-            f'Длительность: {inf[1]}\n'
+        st = f'Ваша ссылка: {message}\n' \
+             f'Параметры:\n' \
+             f'Автор: {inf[2]}\n' \
+             f'Название: {inf[0]}\n' \
+             f'Длительность: {inf[1]}\n'
         return st
 
     def get_tiktok_request(self):

@@ -1,8 +1,7 @@
-
 from io import BytesIO
+
 import requests
 from tqdm import tqdm
-import os
 
 
 def get_channel_name(vid_id):
@@ -202,19 +201,19 @@ def get_response(vid_id):
 
 class File_YouTube:
     """Данный класс необходим для взаимодействия с YouTube (выкачка файлов)"""
+
     def __init__(self, link) -> None:
         """Инициализируем класс"""
         # видео на YouTube (неопределено по формату и качеству)
-        #self.yt = YouTube(link)
+        # self.yt = YouTube(link)
         vid_id = link.split("=")[-1]
-        
+
         self.channel_name = get_channel_name(vid_id)
         self.response = get_response(vid_id)
-        
+
         # https://www.youtube.com/watch?v=9ksTBr3HpFU
 
-
-        #print(response)
+        # print(response)
         self.formats = set()
         self.inform = []
         self.files = {}
@@ -228,13 +227,13 @@ class File_YouTube:
         if len(self.formats) == 0:
             self.formats = set()
             print("pp")
-            url = self.response['qualities']#[0]#['url']
+            url = self.response['qualities']  # [0]#['url']
             for i in url:
-                #print(i['url'])
+                # print(i['url'])
                 print(i["qualityInfo"]['format'])
                 self.formats.add(i["qualityInfo"]['format'])
         return self.formats
-    
+
     def set_format(self, format: str) -> bool:
         """Устанавливает формат format скачиваемому файлу
             \n* True - выбранный формат не находится в списке допустимых
@@ -249,7 +248,7 @@ class File_YouTube:
 
         self.name_format = format
         return False
-    
+
     def found_video(self) -> bool:
         """Поиск видео в фильтре по формату
             \n* False - выбранный формат не поддерживает видео
@@ -258,7 +257,7 @@ class File_YouTube:
             if i["qualityInfo"]['qualityLabel'] != '':
                 return True
         return False
-    
+
     def found_audio(self) -> bool:
         """Поиск аудио в фильтре по формату
             \n* False - выбранный формат не поддерживает аудио
@@ -267,7 +266,7 @@ class File_YouTube:
             if i["qualityInfo"]['audioBitrate'] != '':
                 return True
         return False
-    
+
     def set_type(self, type: str) -> None:
         """Устанавливает тип type скачиваемому файлу
             \n* True - выбранный формат не находится в списке допустимых
@@ -281,7 +280,7 @@ class File_YouTube:
             par = 'audioBitrate'
         if type == "video":
             par = 'qualityLabel'
-        
+
         for i in self.inform:
             if i["qualityInfo"][par] != '':
                 spp.append(i)
@@ -291,17 +290,16 @@ class File_YouTube:
         self.inform = spp
         print(self.inform)
         print("pass_seter")
-        
-        
+
     def found_audio_file(self) -> None:
         """Находим возможные варианты аудио с параметрами (битрейт – (abr),
             формат сжатия аудио – (audio_codec))"""
-        #self.files = {}
+        # self.files = {}
         for i in self.inform:
             print(i)
             st = "Битрейт: {audioBitrate}".format(audioBitrate=i["qualityInfo"]["audioBitrate"])
             self.files[st] = int(i['qualityInfo']["itag"])
-            
+
     def download_audio_file(self, inform):
         print("download_audio_file")
         headers = {
@@ -326,7 +324,7 @@ class File_YouTube:
             'referer': 'https://www.freemake.com/ru/free_video_downloader/',
             'accept-language': 'ru,en;q=0.9,uk;q=0.8',
         }
-        
+
         print(self.files)
         id = self.files[inform]
         print(id)
@@ -340,42 +338,39 @@ class File_YouTube:
         total = int(req.headers.get('content-length', 0))
         print(url)
 
-
         byte_io = BytesIO()
-        #stream.stream_to_buffer(byte_io)
-        
-        #total = int(req.headers.get('content-length', 0))
-        
+        # stream.stream_to_buffer(byte_io)
+
+        # total = int(req.headers.get('content-length', 0))
+
         print("Запись")
         with tqdm(desc=f"{name[0:int(len(name) / 2)]}...",
                   total=total, unit='iB',
-                  unit_scale=True, unit_divisor=1024,) as bar:
+                  unit_scale=True, unit_divisor=1024, ) as bar:
             for data in req.iter_content(chunk_size=1024):
                 size = byte_io.write(data)
                 bar.update(size)
-                
+
         print("Запись окончена")
         byte_io.name = "{name}.{format}".format(name=name, format=self.name_format)
         byte_io.seek(0)
         return byte_io
-    
+
     def found_video_file(self) -> None:
         '''Находим возможные варианты аудио с параметрами (битрейт – (abr),
             формат сжатия аудио – (audio_codec))'''
-        #self.files = {}
+        # self.files = {}
         for i in self.inform:
             print(i["qualityInfo"])
             codec = i["qualityInfo"]["audioBitrate"]
             if codec == '':
                 st = ''' Разрешение видео {res}, Наличие аудио: {progressive} , Битрейт: {audioBitrate}'''.format(
-                                                                  res=i["qualityInfo"]["qualityLabel"],
-                                                                  progressive="Нет",
-                                                                  audioBitrate="Нет")
+                    res=i["qualityInfo"]["qualityLabel"],
+                    progressive="Нет",
+                    audioBitrate="Нет")
             else:
                 st = '''Разрешение видео {res}, Наличие аудио: {progressive} , Битрейт: {audioBitrate}'''.format(
-                                                                  res=i["qualityInfo"]["qualityLabel"],
-                                                                  progressive="Есть",
-                                                                  audioBitrate=codec)
+                    res=i["qualityInfo"]["qualityLabel"],
+                    progressive="Есть",
+                    audioBitrate=codec)
             self.files[st] = int(i['qualityInfo']["itag"])
-        
-        

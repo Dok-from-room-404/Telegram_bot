@@ -5,12 +5,12 @@ from const import *
 from modle.Files import *  # NET_ERROR, LINK_ERROR, FORMAT_ERROR
 from modle.command_bd import *
 
-
 bot = Bot(TOKEN)
 dp = Dispatcher(bot)
 con, cur = connect_bd(BD)
-# maid_bd(con, cur)
 
+
+# maid_bd(con, cur)
 
 
 @dp.message_handler(commands=['help'])
@@ -50,14 +50,14 @@ async def wright(message: types.Message, flag: bool = False):
         # Если юзера нет в системе
         file = File()
         append_user(con, cur, id, file)
-    
+
     if flag:
         "Перезапуск функции скачки"
         file.reset()
-    
+
     # Флаг первичного запроса данных
     flag = False
-    
+
     if file.stage == 0:
         # Если выбор соц. сети
         if message.text != "":
@@ -78,13 +78,15 @@ async def wright(message: types.Message, flag: bool = False):
             b1, b2 = KeyboardButton(YOUTUBE), KeyboardButton(TIKTOK)
             markup.add(b1, b2)
             await message.answer("Откуда будем скачивать:", reply_markup=markup)
-            
+
     if file.stage == 1:
         # Если ввод ссылки
         if flag:
             # Удаляем кнопки
             hideboard = ReplyKeyboardRemove()
-            await message.answer("Введите ссылку: ", reply_markup=hideboard)
+            await message.answer(f"Введите ссылку: "
+                                 f"пример Youtube:https://www.youtube.com/watch?v=********"
+                                 f"пример TikTok:https://www.tiktok.com/@*******/video/*****", reply_markup=hideboard)
         else:
             try:
                 '''После того, как пользователь ввел ссылку'''
@@ -106,7 +108,7 @@ async def wright(message: types.Message, flag: bool = False):
                 '''Недопустимая ссылка'''
                 await message.answer(er)
                 await message.answer("Введите ссылку: ")
-            
+
     if file.stage == 2:
         # Если ввод формата файла
         if file.net == YOUTUBE:
@@ -134,15 +136,15 @@ async def wright(message: types.Message, flag: bool = False):
                     await message.answer(er)
         elif file.net == TIKTOK:
             if flag:
-                #try:
-                    file.get_tiktok_request()
-                    ans = file.get_tiktok_info(message.text)
-                    await message.answer(ans, disable_web_page_preview=True)
-                    await message.answer_video(file.get_tiktok_video(), caption='Полное видео без водяного знака')
-                    await message.answer_audio(file.get_tiktok_audio(), caption='Отдельная аудио дорожка')
-                    file.reset()
-                #except Exception as e:
-                #    await message.answer('Произошла ошибка')
+                # try:
+                file.get_tiktok_request()
+                ans = file.get_tiktok_info(message.text)
+                await message.answer(ans, disable_web_page_preview=True)
+                await message.answer_video(file.get_tiktok_video(), caption='Полное видео без водяного знака')
+                await message.answer_audio(file.get_tiktok_audio(), caption='Отдельная аудио дорожка')
+                file.reset()
+            # except Exception as e:
+            #    await message.answer('Произошла ошибка')
 
     if file.stage == "question_format":
         # Согласны ли вы изменить формат
@@ -151,7 +153,8 @@ async def wright(message: types.Message, flag: bool = False):
                 markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
                 markup.insert(KeyboardButton("Да"))
                 markup.insert(KeyboardButton("Нет"))
-                await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (Да/Нет)?", reply_markup=markup)
+                await message.answer("Данный формат является аудио дорожкой. Согласны ли вы изменить формат (Да/Нет)?",
+                                     reply_markup=markup)
             else:
                 file.check_question_format(message.text)
                 flag = True
@@ -161,8 +164,7 @@ async def wright(message: types.Message, flag: bool = False):
                         # Добавляем на кнопки форматы
                         markup.insert(KeyboardButton(i))
                     await message.answer("Выберете необходимый вам формат файла", reply_markup=markup)
-                    
-                    
+
     if file.stage == 3:
         # Если ввод типа файла
         if file.net == YOUTUBE:
@@ -187,14 +189,14 @@ async def wright(message: types.Message, flag: bool = False):
                 except Exception as er:
                     '''Недопустимый тип файла'''
                     await message.answer(er)
-                
+
     if file.stage == 4:
         # Выбор бит рейда у аудио дорожки или выбор разрешения видео
         if file.net == YOUTUBE:
             if flag:
                 if file.class_net.found_video():
                     files = file.inform_video()
-                    
+
                 elif file.class_net.found_audio():
                     files = file.inform_audio()
 
@@ -212,10 +214,8 @@ async def wright(message: types.Message, flag: bool = False):
                         print("found_audio")
                         download_file = file.download_audio(message.text)
 
-
                     await bot.send_document(message.from_user.id, download_file)
                     await message.answer("Загрузка файла закончена")
-                    flag = True
                     message.text = ""
                     file.reset()
                 # НЕ УДАЛЯТЬ
@@ -230,4 +230,3 @@ async def wright(message: types.Message, flag: bool = False):
 
 if __name__ == "__main__":
     executor.start_polling(dp)
-    
