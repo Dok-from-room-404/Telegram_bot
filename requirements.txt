@@ -2,3 +2,5 @@ aiogram == 2.25.1
 pytube == 12.1.3
 requests==2.29.0
 python-dotenv~=1.0.0
+tqdm~=4.65.0
+TikTokApi~=5.2.2
