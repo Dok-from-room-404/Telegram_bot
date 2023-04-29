@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 from random import choice
 from const import *
 from modle.Files import *  # NET_ERROR, LINK_ERROR, FORMAT_ERROR
-from modle.command_bd import *
+from data.command_bd import *
 
 bot = Bot(TOKEN)
 dp = Dispatcher(bot)

@@ -18,7 +18,7 @@ import sys
 def connect_bd(name: str):
     """Позволяет подключится к БД
         \n* name - имя БД"""
-    script_dir = pathlib.Path(sys.argv[0]).parent
+    script_dir = pathlib.Path(__file__).parent.resolve()
     db_file = script_dir / name
     print(db_file)
     print(db_file)
