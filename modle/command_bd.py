@@ -11,13 +11,17 @@
 * uppdete_user - Обновляет информацию о пользователе
 """
 from sqlite3 import connect, Connection, Cursor
+import pathlib
 import pickle
+import sys
 
 
 def connect_bd(name: str):
     """Позволяет подключится к БД
         \n* name - имя БД"""
-    con = connect(name)
+    script_dir = pathlib.Path(sys.argv[0]).parent
+    db_file = script_dir / name
+    con = connect(db_file)
     cur = con.cursor()
     return con, cur
 
