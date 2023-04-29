@@ -15,12 +15,14 @@ import pathlib
 import pickle
 import sys
 
-
 def connect_bd(name: str):
     """Позволяет подключится к БД
         \n* name - имя БД"""
     script_dir = pathlib.Path(sys.argv[0]).parent
     db_file = script_dir / name
+    print(db_file)
+    print(db_file)
+    print(db_file)
     con = connect(db_file)
     cur = con.cursor()
     return con, cur
