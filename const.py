@@ -1,11 +1,15 @@
 import os
 from dotenv import load_dotenv, find_dotenv
+from aiogram import types
 
 load_dotenv(find_dotenv())
 
 TOKEN = os.environ['TOKEN']  # Токен бота от BotFather
 # t.me/liliindexsbot - ссылка
 TEXT_FOR_HELP = '''
+Меня зовут Lili, я умею скачивать видео с ютуба(не больше 50Mb) и TikTok
+(Youtube shorts пока не работают)
+
 Список доступных команд:
 \t/help - список доступных команд
 \t/start – команда старт
@@ -24,3 +28,9 @@ HEADERS = {
     "X-RapidAPI-Host": "tiktok-video-no-watermark2.p.rapidapi.com"
 }
 URL = "https://tiktok-video-no-watermark2.p.rapidapi.com/"
+
+COMMANDS = [
+            types.BotCommand("start", "Start"),
+            types.BotCommand("help", "Help"),
+            types.BotCommand("download", "Download new"),
+        ]

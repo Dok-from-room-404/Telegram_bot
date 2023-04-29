@@ -28,7 +28,7 @@ async def start(message: types.Message):
                                                   hello=choice(HELLO_VARIATIONS)))
     # await bot.send_message(message.chat.id, "Я {bot},
     # могу скачивать видео и аудио".format(bot = bot.get_me().first_name))
-    await message.answer("Я Lili, умею скачивать видео с ютуба и тиктока")
+    await message.answer("Я Lili, умею скачивать видео с YouTube и TikTok")
     await download(message)
 
 
@@ -86,7 +86,8 @@ async def wright(message: types.Message, flag: bool = False):
             hideboard = ReplyKeyboardRemove()
             await message.answer(f"Введите ссылку:\n"
                                  f"пример Youtube:https://www.youtube.com/watch?v=********\n"
-                                 f"пример TikTok:https://www.tiktok.com/@*******/video/*****", reply_markup=hideboard)
+                                 f"пример TikTok:https://www.tiktok.com/@*******/video/*****",
+                                 reply_markup=hideboard, disable_web_page_preview=True)
         else:
             try:
                 '''После того, как пользователь ввел ссылку'''
@@ -215,7 +216,8 @@ async def wright(message: types.Message, flag: bool = False):
                         download_file = file.download_audio(message.text)
 
                     await bot.send_document(message.from_user.id, download_file)
-                    await message.answer("Загрузка файла закончена")
+                    await message.answer("Загрузка файла закончена\n"
+                                         "Нажмите \t/download для продолжения", reply_markup=ReplyKeyboardRemove())
                     message.text = ""
                     file.reset()
                 # НЕ УДАЛЯТЬ
@@ -230,3 +232,4 @@ async def wright(message: types.Message, flag: bool = False):
 
 if __name__ == "__main__":
     executor.start_polling(dp)
+
