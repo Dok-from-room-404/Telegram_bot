@@ -1,0 +1,14 @@
+Name: Lilibot
+link: t.me/liliindexsbot
+Хостинг: https://cloud.amvera.ru/
+Используемые библиотеки: 
+aiogram == 2.25.1
+pytube == 12.1.3
+requests==2.29.0
+python-dotenv~=1.0.0
+tqdm~=4.65.0
+TikTokApi~=5.2.2
+Функционал:
+Умеет скачивать видео с YouTube в разных форматах, но размером не больше 50Mb(временно)+временно не работают shorts
+Умеет скачивать видео с TikTok без водяных знаков
+В будущем планируется добавить Instagram, Vk и т.д.
