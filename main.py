@@ -84,8 +84,8 @@ async def wright(message: types.Message, flag: bool = False):
         if flag:
             # Удаляем кнопки
             hideboard = ReplyKeyboardRemove()
-            await message.answer(f"Введите ссылку: "
-                                 f"пример Youtube:https://www.youtube.com/watch?v=********"
+            await message.answer(f"Введите ссылку:\n"
+                                 f"пример Youtube:https://www.youtube.com/watch?v=********\n"
                                  f"пример TikTok:https://www.tiktok.com/@*******/video/*****", reply_markup=hideboard)
         else:
             try:
